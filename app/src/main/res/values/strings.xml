@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">StockMover</string>
+    <string name="dialog_title">Please wait for a while!</string>
+    <string name="log_in_text">Log-In</string>
+</resources>
