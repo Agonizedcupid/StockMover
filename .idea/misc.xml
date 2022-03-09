@@ -4,6 +4,8 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/drawable/button_background.xml" value="0.1795" />
+        <entry key="app/src/main/res/drawable/button_non_pressed_background.xml" value="0.1795" />
+        <entry key="app/src/main/res/drawable/button_pressed_background.xml" value="0.1795" />
         <entry key="app/src/main/res/drawable/dialog_layout_background.xml" value="0.216" />
         <entry key="app/src/main/res/drawable/edit_text_background.xml" value="0.2335" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.33" />
