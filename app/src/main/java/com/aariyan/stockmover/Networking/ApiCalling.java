@@ -1,5 +1,6 @@
 package com.aariyan.stockmover.Networking;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -42,10 +43,12 @@ public class ApiCalling {
 
     private List<ProductsSyncModel> listOfProduct = new ArrayList<>();
     DatabaseAdapter adapter;
+    Activity activity;
 
     public ApiCalling(Context context) {
         this.context = context;
         adapter = new DatabaseAdapter(context);
+        activity = (Activity) context;
     }
 
     public void postLogIn(String userName, String pinCode, ProgressBar progressBar) {
@@ -128,6 +131,7 @@ public class ApiCalling {
             public void onNext(Object o) {
                 ProductsSyncModel model = (ProductsSyncModel) o;
                 adapter.insertProducts(model.getBarcode(), model.getPastelCode());
+               // Log.d("THREAD_CHECKING", Thread.currentThread().getName().toString());
             }
 
             @Override
@@ -137,7 +141,12 @@ public class ApiCalling {
 
             @Override
             public void onComplete() {
-
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(context, "Sync Completed!", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         };
         observable.subscribe(observer);

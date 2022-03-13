@@ -20,6 +20,8 @@ public class DatabaseAdapter {
     DatabaseHelper helper;
     private List<ProductsSyncModel> planList = new ArrayList<>();
 
+    public static boolean check = false;
+
 
     public DatabaseAdapter(Context context) {
         helper = new DatabaseHelper(context);
@@ -27,10 +29,11 @@ public class DatabaseAdapter {
 
     //Insert Header:
     public long insertProducts(String barCode, String pastelCode) {
-
         SQLiteDatabase database = helper.getWritableDatabase();
-//        database.execSQL(DatabaseHelper.DROP_PRODUCT_TABLE);
-//        database.execSQL(DatabaseHelper.CREATE_PRODUCT_TABLE);
+        if (!check) {
+            check = true;
+            dropProductTable();
+        }
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(DatabaseHelper.PastelCode, pastelCode);
@@ -38,6 +41,12 @@ public class DatabaseAdapter {
 
         long id = database.insert(DatabaseHelper.PRODUCT_TABLE_NAME, null, contentValues);
         return id;
+    }
+
+    public void dropProductTable() {
+        SQLiteDatabase database = helper.getWritableDatabase();
+        database.execSQL(DatabaseHelper.DROP_PRODUCT_TABLE);
+        database.execSQL(DatabaseHelper.CREATE_PRODUCT_TABLE);
     }
 
 
