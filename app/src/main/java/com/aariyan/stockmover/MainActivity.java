@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.ActionBar;
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -14,12 +15,14 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aariyan.stockmover.Activity.HomeActivity;
 import com.aariyan.stockmover.Common.Constant;
 import com.aariyan.stockmover.Dialog.ProgressDialog;
+import com.aariyan.stockmover.Networking.ApiCalling;
 import com.aariyan.stockmover.Networking.ApiInterface;
 import com.aariyan.stockmover.Networking.RetrofitClient;
 
@@ -39,7 +42,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EditText userName, pinCode;
     private TextView logInBtn;
 
-    CompositeDisposable compositeDisposable = new CompositeDisposable();
+    //CompositeDisposable compositeDisposable = new CompositeDisposable();
+
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +62,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         pinCode = findViewById(R.id.logInPinCodeEdtText);
         logInBtn = findViewById(R.id.logInBtn);
         logInBtn.setOnClickListener(this);
+
+        progressBar = findViewById(R.id.progressbar);
     }
 
     @Override
@@ -83,37 +90,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             pinCode.requestFocus();
             return;
         }
-
-        ApiInterface apis = RetrofitClient.getClient().create(ApiInterface.class);
-        compositeDisposable.add(apis.loggedIn(name, Integer.parseInt(pin))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<ResponseBody>() {
-                    @Override
-                    public void accept(ResponseBody responseBody) throws Throwable {
-                        JSONArray root = new JSONArray(responseBody.string());
-                        if (root.length() > 0) {
-                            for (int i = 0; i < root.length(); i++) {
-                                JSONObject single = root.getJSONObject(i);
-                                Constant.userID = single.getString("UserID");
-                                startActivity(new Intent(MainActivity.this, HomeActivity.class));
-                            }
-                        } else {
-                            Toast.makeText(MainActivity.this, "Invalid User!", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Throwable {
-                        Toast.makeText(MainActivity.this, "Error: " + throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                }));
+        progressBar.setVisibility(View.VISIBLE);
+        ApiCalling apiCalling = new ApiCalling(MainActivity.this);
+        apiCalling.postLogIn(name,pin,progressBar);
 
     }
 
-    @Override
-    protected void onDestroy() {
-        compositeDisposable.clear();
-        super.onDestroy();
-    }
+
 }

@@ -12,4 +12,7 @@ public interface ApiInterface {
     @FormUrlEncoded
     @POST("GrvApp/users.php")
     Observable<ResponseBody> loggedIn(@Field("username") String userName, @Field("pincode") int pinCode);
+
+    @GET("StockMover/items.php")
+    Observable<ResponseBody> syncProduct();
 }

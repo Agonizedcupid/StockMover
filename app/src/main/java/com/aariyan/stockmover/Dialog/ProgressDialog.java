@@ -11,6 +11,8 @@ import android.view.View;
 import com.aariyan.stockmover.MainActivity;
 import com.aariyan.stockmover.R;
 
+import dmax.dialog.SpotsDialog;
+
 public class ProgressDialog {
 
     static Dialog dialog;
@@ -31,5 +33,20 @@ public class ProgressDialog {
 
     public static void dialogDismiss() {
         dialog.dismiss();
+    }
+
+    public static void showSpotsDialog(String message, Context context) {
+        new SpotsDialog.Builder()
+                .setContext(context)
+                .setMessage(message)
+                .build()
+        .show();
+    }
+
+    public static void dismissSpotsDialog(Context context) {
+        new SpotsDialog.Builder()
+                .setContext(context)
+                .build()
+                .dismiss();
     }
 }

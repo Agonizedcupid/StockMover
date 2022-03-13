@@ -4,14 +4,26 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.aariyan.stockmover.Interface.ProductSyncInterface;
+import com.aariyan.stockmover.Model.ProductsSyncModel;
+import com.aariyan.stockmover.Networking.ApiCalling;
 import com.aariyan.stockmover.R;
+
+import java.util.List;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private TextView stockOutBtn,stockInBtn,uploadDocumentBtn,syncProductBtn,syncLocationBtn;
+    private TextView stockOutBtn, stockInBtn, uploadDocumentBtn, syncProductBtn, syncLocationBtn;
+
+    private ImageView backBtn;
+
+    boolean checkClick = false;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +49,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         syncProductBtn = findViewById(R.id.syncProductBtn);
         syncProductBtn.setOnClickListener(this);
 
+        backBtn = findViewById(R.id.backBtn);
+        backBtn.setOnClickListener(this);
+
+        progressBar = findViewById(R.id.pBar);
+
     }
 
     @Override
@@ -59,8 +76,39 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.syncProductBtn:
-                Toast.makeText(this, "Product Synced", Toast.LENGTH_SHORT).show();
+                ApiCalling apiCalling = new ApiCalling(HomeActivity.this);
+                apiCalling.productSync(progressBar, new ProductSyncInterface() {
+                    @Override
+                    public void productList(List<ProductsSyncModel> list) {
+                        //apiCalling.insertProductIntoSQLite(list);
+                    }
+
+                    @Override
+                    public void error(String message) {
+                        Toast.makeText(HomeActivity.this, "" + message,Toast.LENGTH_SHORT).show();
+                    }
+                });
+                break;
+
+            case R.id.backBtn:
+                checkClick = true;
+                onBackPressed();
                 break;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!checkClick) {
+            Toast.makeText(this, "Click Top Left Corner Icon!", Toast.LENGTH_LONG).show();
+        } else {
+            super.onBackPressed();
+        }
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }
