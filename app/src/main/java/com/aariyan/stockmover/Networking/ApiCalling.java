@@ -196,7 +196,6 @@ public class ApiCalling {
                     }
                 }));
     }
-
     public void insertLocationIntoSQLite(List<LocationSyncModel> list, ProgressBar progressBar) {
         progressBar.setVisibility(View.VISIBLE);
         Observable observable = Observable.fromIterable(list).observeOn(Schedulers.newThread());

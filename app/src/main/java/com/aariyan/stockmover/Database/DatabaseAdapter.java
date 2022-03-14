@@ -5,10 +5,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.location.Location;
 
 import androidx.annotation.Nullable;
 
 
+import com.aariyan.stockmover.Model.LocationSyncModel;
 import com.aariyan.stockmover.Model.ProductsSyncModel;
 
 import java.util.ArrayList;
@@ -19,6 +21,7 @@ public class DatabaseAdapter {
 
     DatabaseHelper helper;
     private List<ProductsSyncModel> planList = new ArrayList<>();
+    private List<LocationSyncModel> locationList = new ArrayList<>();
 
     public static boolean checkProduct = false;
     public static boolean checkLocations = false;
@@ -50,7 +53,7 @@ public class DatabaseAdapter {
         SQLiteDatabase database = helper.getWritableDatabase();
         if (!checkLocations) {
             checkLocations = true;
-            dropProductTable();
+            dropLocationTable();
         }
 
         ContentValues contentValues = new ContentValues();
@@ -61,6 +64,34 @@ public class DatabaseAdapter {
         long id = database.insert(DatabaseHelper.LOCATION_TABLE_NAME, null, contentValues);
         return id;
     }
+
+
+
+    //validate location:
+    public List<LocationSyncModel> getLocation(String input) {
+
+        locationList.clear();
+        SQLiteDatabase database = helper.getWritableDatabase();
+        //select * from tableName where name = ? and customerName = ?:
+        // String selection = DatabaseHelper.USER_NAME+" where ? AND "+DatabaseHelper.CUSTOMER_NAME+" LIKE ?";
+        String selection = DatabaseHelper.strBinLocationName + "=?";
+
+
+        String[] args = {input};
+        String[] columns = {DatabaseHelper.UID,DatabaseHelper.intBinLocationId,DatabaseHelper.strBinLocationName, DatabaseHelper.intaislenumber };
+
+        Cursor cursor = database.query(DatabaseHelper.LOCATION_TABLE_NAME, columns, selection, args, null, null, null);
+        while (cursor.moveToNext()) {
+            LocationSyncModel model = new LocationSyncModel(
+                    cursor.getString(1),
+                    cursor.getString(2),
+                    cursor.getString(3)
+            );
+            locationList.add(model);
+        }
+        return locationList;
+    }
+
 
 
     public void dropProductTable() {

@@ -2,6 +2,7 @@ package com.aariyan.stockmover.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -59,13 +60,18 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View view) {
         ApiCalling apiCalling = new ApiCalling(HomeActivity.this);
+        Intent intent;
         int id = view.getId();
         switch (id) {
             case R.id.stockOutBtn:
-                Toast.makeText(this, "Stock Out", Toast.LENGTH_SHORT).show();
+                intent = new Intent(HomeActivity.this, ScanShelfActivity.class);
+                intent.putExtra("type", "out");
+                startActivity(intent);
                 break;
             case R.id.stockInBtn:
-                Toast.makeText(this, "Stock In", Toast.LENGTH_SHORT).show();
+                intent = new Intent(HomeActivity.this, ScanShelfActivity.class);
+                intent.putExtra("type", "in");
+                startActivity(intent);
                 break;
 
             case R.id.uploadDocumentBtn:
