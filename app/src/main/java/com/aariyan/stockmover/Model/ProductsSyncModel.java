@@ -1,12 +1,21 @@
 package com.aariyan.stockmover.Model;
 
 public class ProductsSyncModel {
-    private String PastelCode,Barcode;
+    private String PastelCode,Barcode,ProductDescription;
     public ProductsSyncModel(){}
 
-    public ProductsSyncModel(String pastelCode, String barcode) {
+    public ProductsSyncModel(String pastelCode, String barcode, String productDescription) {
         PastelCode = pastelCode;
         Barcode = barcode;
+        ProductDescription = productDescription;
+    }
+
+    public String getProductDescription() {
+        return ProductDescription;
+    }
+
+    public void setProductDescription(String productDescription) {
+        ProductDescription = productDescription;
     }
 
     public String getPastelCode() {

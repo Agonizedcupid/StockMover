@@ -14,6 +14,7 @@ import com.aariyan.stockmover.Database.DatabaseAdapter;
 import com.aariyan.stockmover.Dialog.ProgressDialog;
 import com.aariyan.stockmover.Interface.ProductSyncInterface;
 import com.aariyan.stockmover.MainActivity;
+import com.aariyan.stockmover.Model.LocationSyncModel;
 import com.aariyan.stockmover.Model.ProductsSyncModel;
 
 import org.json.JSONArray;
@@ -40,10 +41,14 @@ public class ApiCalling {
     ApiInterface apis = RetrofitClient.getClient().create(ApiInterface.class);
     CompositeDisposable logInDisposable = new CompositeDisposable();
     CompositeDisposable productSyncDisposable = new CompositeDisposable();
+    CompositeDisposable locationSyncDisposable = new CompositeDisposable();
 
     private List<ProductsSyncModel> listOfProduct = new ArrayList<>();
     DatabaseAdapter adapter;
     Activity activity;
+
+    private List<LocationSyncModel> listOfLocation = new ArrayList<>();
+    int count = 0;
 
     public ApiCalling(Context context) {
         this.context = context;
@@ -80,6 +85,7 @@ public class ApiCalling {
                 }));
     }
 
+    //Product Sync:
     public void productSync(ProgressBar progressBar, ProductSyncInterface productSyncInterface) {
         progressBar.setVisibility(View.VISIBLE);
         productSyncDisposable.add(apis.syncProduct()
@@ -95,12 +101,13 @@ public class ApiCalling {
                                 JSONObject single = root.getJSONObject(i);
                                 String PastelCode = single.getString("PastelCode");
                                 String Barcode = single.getString("Barcode");
+                                String ProductDescription = single.getString("ProductDescription");
                                 ProductsSyncModel model = new ProductsSyncModel(
-                                        PastelCode, Barcode
+                                        PastelCode, Barcode, ProductDescription
                                 );
                                 listOfProduct.add(model);
                             }
-                            insertProductIntoSQLite(listOfProduct);
+                            insertProductIntoSQLite(listOfProduct, progressBar);
                             productSyncInterface.productList(listOfProduct);
                         } else {
                             Toast.makeText(context, "No data found!", Toast.LENGTH_SHORT).show();
@@ -118,9 +125,9 @@ public class ApiCalling {
                 }));
     }
 
-    public void insertProductIntoSQLite(List<ProductsSyncModel> list) {
+    public void insertProductIntoSQLite(List<ProductsSyncModel> list, ProgressBar progressBar) {
+        progressBar.setVisibility(View.VISIBLE);
         Observable observable = Observable.fromIterable(list).observeOn(Schedulers.newThread());
-        Toast.makeText(context, "" + list.size(), Toast.LENGTH_SHORT).show();
         Observer observer = new Observer() {
             @Override
             public void onSubscribe(@NonNull Disposable d) {
@@ -130,8 +137,8 @@ public class ApiCalling {
             @Override
             public void onNext(Object o) {
                 ProductsSyncModel model = (ProductsSyncModel) o;
-                adapter.insertProducts(model.getBarcode(), model.getPastelCode());
-               // Log.d("THREAD_CHECKING", Thread.currentThread().getName().toString());
+                adapter.insertProducts(model.getBarcode(), model.getPastelCode(), model.getProductDescription());
+                // Log.d("THREAD_CHECKING", Thread.currentThread().getName().toString());
             }
 
             @Override
@@ -145,6 +152,79 @@ public class ApiCalling {
                     @Override
                     public void run() {
                         Toast.makeText(context, "Sync Completed!", Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.GONE);
+                    }
+                });
+            }
+        };
+        observable.subscribe(observer);
+    }
+
+    //Location Sync:
+    public void locationSync(ProgressBar progressBar) {
+        progressBar.setVisibility(View.VISIBLE);
+        locationSyncDisposable.add(apis.syncLocation()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<ResponseBody>() {
+                    @Override
+                    public void accept(ResponseBody responseBody) throws Throwable {
+                        JSONArray root = new JSONArray(responseBody.string());
+                        listOfLocation.clear();
+                        if (root.length() > 0) {
+                            for (int i = 0; i < root.length(); i++) {
+                                JSONObject single = root.getJSONObject(i);
+                                String intBinLocationId = single.getString("intBinLocationId");
+                                String strBinLocationName = single.getString("strBinLocationName");
+                                String intaislenumber = single.getString("intaislenumber");
+                                LocationSyncModel model = new LocationSyncModel(
+                                        intBinLocationId, strBinLocationName, intaislenumber
+                                );
+                                listOfLocation.add(model);
+                            }
+                            insertLocationIntoSQLite(listOfLocation, progressBar);
+                        } else {
+                            Toast.makeText(context, "No data found!", Toast.LENGTH_SHORT).show();
+                        }
+                        progressBar.setVisibility(View.GONE);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Throwable {
+                        Toast.makeText(context, "Error: " + throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.GONE);
+                    }
+                }));
+    }
+
+    public void insertLocationIntoSQLite(List<LocationSyncModel> list, ProgressBar progressBar) {
+        progressBar.setVisibility(View.VISIBLE);
+        Observable observable = Observable.fromIterable(list).observeOn(Schedulers.newThread());
+        Observer observer = new Observer() {
+            @Override
+            public void onSubscribe(@NonNull Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(Object o) {
+                LocationSyncModel model = (LocationSyncModel) o;
+                adapter.insertLocations(model.getIntBinLocationId(), model.getStrBinLocationName(), model.getIntaislenumber());
+                // Log.d("THREAD_CHECKING", Thread.currentThread().getName().toString());
+            }
+
+            @Override
+            public void onError(@NonNull Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(context, "Sync Completed!", Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.GONE);
                     }
                 });
             }

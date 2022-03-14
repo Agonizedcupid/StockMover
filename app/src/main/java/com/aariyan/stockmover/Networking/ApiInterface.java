@@ -15,4 +15,7 @@ public interface ApiInterface {
 
     @GET("StockMover/items.php")
     Observable<ResponseBody> syncProduct();
+
+    @GET("StockMover/Locations.php")
+    Observable<ResponseBody> syncLocation();
 }

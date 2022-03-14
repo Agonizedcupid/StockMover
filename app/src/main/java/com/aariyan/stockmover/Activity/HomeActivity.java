@@ -58,6 +58,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
+        ApiCalling apiCalling = new ApiCalling(HomeActivity.this);
         int id = view.getId();
         switch (id) {
             case R.id.stockOutBtn:
@@ -72,11 +73,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.syncLocationBtn:
-                Toast.makeText(this, "Location Synced", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Sync Started, Please wait!", Toast.LENGTH_SHORT).show();
+                apiCalling.locationSync(progressBar);
                 break;
 
             case R.id.syncProductBtn:
-                ApiCalling apiCalling = new ApiCalling(HomeActivity.this);
+                Toast.makeText(this, "Sync Started, Please wait!", Toast.LENGTH_SHORT).show();
                 apiCalling.productSync(progressBar, new ProductSyncInterface() {
                     @Override
                     public void productList(List<ProductsSyncModel> list) {
@@ -85,7 +87,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
                     @Override
                     public void error(String message) {
-                        Toast.makeText(HomeActivity.this, "" + message,Toast.LENGTH_SHORT).show();
+                        Toast.makeText(HomeActivity.this, "" + message, Toast.LENGTH_SHORT).show();
                     }
                 });
                 break;
