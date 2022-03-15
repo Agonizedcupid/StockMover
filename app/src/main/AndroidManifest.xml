@@ -13,6 +13,9 @@
         android:theme="@style/Theme.StockMover"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".Activity.SelectionActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activity.ScanShelfActivity"
             android:exported="false" />
         <activity

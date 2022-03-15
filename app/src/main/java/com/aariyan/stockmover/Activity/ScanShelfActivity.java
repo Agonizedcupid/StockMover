@@ -80,7 +80,7 @@ public class ScanShelfActivity extends AppCompatActivity implements View.OnClick
                 listOfLocation.clear();
                 listOfLocation = databaseAdapter.getLocation(enterLocation.getText().toString());
                 if (listOfLocation.size() > 0) {
-                    intent = new Intent(ScanShelfActivity.this, ScanShelfActivity.class);
+                    intent = new Intent(ScanShelfActivity.this, SelectionActivity.class);
                     intent.putExtra("type", "out");
                     startActivity(intent);
                 } else {

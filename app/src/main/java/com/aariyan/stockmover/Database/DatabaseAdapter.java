@@ -20,7 +20,7 @@ public class DatabaseAdapter {
 
 
     DatabaseHelper helper;
-    private List<ProductsSyncModel> planList = new ArrayList<>();
+    private List<ProductsSyncModel> productList = new ArrayList<>();
     private List<LocationSyncModel> locationList = new ArrayList<>();
 
     public static boolean checkProduct = false;
@@ -67,7 +67,7 @@ public class DatabaseAdapter {
 
 
 
-    //validate location:
+    //get location:
     public List<LocationSyncModel> getLocation(String input) {
 
         locationList.clear();
@@ -92,6 +92,25 @@ public class DatabaseAdapter {
         return locationList;
     }
 
+
+    //validate location:
+    public List<ProductsSyncModel> getProduct() {
+
+        productList.clear();
+        SQLiteDatabase database = helper.getWritableDatabase();
+        String[] columns = {DatabaseHelper.UID,DatabaseHelper.PastelCode,DatabaseHelper.Barcode, DatabaseHelper.ProductDescription };
+
+        Cursor cursor = database.query(DatabaseHelper.PRODUCT_TABLE_NAME, columns, null, null, null, null, null);
+        while (cursor.moveToNext()) {
+            ProductsSyncModel model = new ProductsSyncModel(
+                    cursor.getString(1),
+                    cursor.getString(2),
+                    cursor.getString(3)
+            );
+            productList.add(model);
+        }
+        return productList;
+    }
 
 
     public void dropProductTable() {
