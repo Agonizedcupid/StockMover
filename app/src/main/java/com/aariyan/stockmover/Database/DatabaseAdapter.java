@@ -112,6 +112,46 @@ public class DatabaseAdapter {
         return productList;
     }
 
+    //validate location:
+    public List<ProductsSyncModel> getProductByBarcode(String barcode) {
+
+        productList.clear();
+        SQLiteDatabase database = helper.getWritableDatabase();
+
+        String selection = DatabaseHelper.Barcode + "=?";
+
+
+        String[] args = {barcode};
+
+        String[] columns = {DatabaseHelper.UID,DatabaseHelper.PastelCode,DatabaseHelper.Barcode, DatabaseHelper.ProductDescription };
+
+        Cursor cursor = database.query(DatabaseHelper.PRODUCT_TABLE_NAME, columns, selection, args, null, null, null);
+        while (cursor.moveToNext()) {
+            ProductsSyncModel model = new ProductsSyncModel(
+                    cursor.getString(1),
+                    cursor.getString(2),
+                    cursor.getString(3)
+            );
+            productList.add(model);
+        }
+        return productList;
+    }
+
+
+    //Insert STOCK_IN_OUT:
+    public long insertStocks(String productCode, String date, String quantity, String type) {
+        SQLiteDatabase database = helper.getWritableDatabase();
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DatabaseHelper.productCode, productCode);
+        contentValues.put(DatabaseHelper.date, date);
+        contentValues.put(DatabaseHelper.quantity, quantity);
+        contentValues.put(DatabaseHelper.stockType, type);
+
+        long id = database.insert(DatabaseHelper.PRODUCT_STOCK_IN_OUT_NAME, null, contentValues);
+        return id;
+    }
+
 
     public void dropProductTable() {
         SQLiteDatabase database = helper.getWritableDatabase();
@@ -130,7 +170,7 @@ public class DatabaseAdapter {
         private Context context;
 
         private static final String DATABASE_NAME = "stock_mover.db";
-        private static final int VERSION_NUMBER = 4;
+        private static final int VERSION_NUMBER = 5;
 
         //Product Table:
         private static final String PRODUCT_TABLE_NAME = "products";
@@ -155,7 +195,6 @@ public class DatabaseAdapter {
         private static final String strBinLocationName = "strBinLocationName";
         private static final String intaislenumber = "intaislenumber";
 
-
         //Creating Location the table:
         private static final String CREATE_LOCATION_TABLE = "CREATE TABLE " + LOCATION_TABLE_NAME
                 + " (" + UID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -163,6 +202,25 @@ public class DatabaseAdapter {
                 + strBinLocationName + " VARCHAR(255),"
                 + intaislenumber + " VARCHAR(255));";
         private static final String DROP_LOCATION_TABLE = "DROP TABLE IF EXISTS " + LOCATION_TABLE_NAME;
+
+
+
+        //Stock_out_in Table:
+        private static final String PRODUCT_STOCK_IN_OUT_NAME = "stock_in_out";
+        private static final String productCode = "productCode";
+        private static final String date = "date";
+        private static final String quantity = "quantity";
+        private static final String stockType = "stockType";
+
+
+        //Creating Stock_out_in the table:
+        private static final String CREATE_STOCK_IN_OUT_TABLE = "CREATE TABLE " + PRODUCT_STOCK_IN_OUT_NAME
+                + " (" + UID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + productCode + " VARCHAR(255),"
+                + date + " VARCHAR(255),"
+                + quantity + " VARCHAR(255),"
+                + stockType + " VARCHAR(255));";
+        private static final String DROP_STOCK_IN_OUT_TABLE = "DROP TABLE IF EXISTS " + PRODUCT_STOCK_IN_OUT_NAME;
 
 
         public DatabaseHelper(@Nullable Context context) {
@@ -176,6 +234,7 @@ public class DatabaseAdapter {
             try {
                 db.execSQL(CREATE_PRODUCT_TABLE);
                 db.execSQL(CREATE_LOCATION_TABLE);
+                db.execSQL(CREATE_STOCK_IN_OUT_TABLE);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -187,6 +246,7 @@ public class DatabaseAdapter {
             try {
                 db.execSQL(DROP_PRODUCT_TABLE);
                 db.execSQL(DROP_LOCATION_TABLE);
+                db.execSQL(DROP_STOCK_IN_OUT_TABLE);
                 onCreate(db);
             } catch (Exception e) {
                 e.printStackTrace();

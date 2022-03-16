@@ -17,6 +17,7 @@
         <entry key="app/src/main/res/drawable/green_btn_background_non_pressed.xml" value="0.175" />
         <entry key="app/src/main/res/drawable/red_btn_background_non_pressed.xml" value="0.209" />
         <entry key="app/src/main/res/drawable/yellow_btn_background_non_pressed.xml" value="0.1705" />
+        <entry key="app/src/main/res/layout/activity_action.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/activity_home.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_scan_shelf.xml" value="0.35625" />

@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.aariyan.stockmover.Interface.ItemClickListener;
 import com.aariyan.stockmover.Model.ProductsSyncModel;
 import com.aariyan.stockmover.R;
 
@@ -18,9 +19,11 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
     private Context context;
     private List<ProductsSyncModel> list;
-    public ProductAdapter(Context context, List<ProductsSyncModel> list) {
+    ItemClickListener itemClickListener;
+    public ProductAdapter(Context context, List<ProductsSyncModel> list, ItemClickListener itemClickListener) {
         this.context = context;
         this.list = list;
+        this.itemClickListener = itemClickListener;
     }
 
     @NonNull
@@ -33,6 +36,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ProductsSyncModel model = list.get(position);
         holder.itemName.setText(model.getProductDescription());
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                itemClickListener.onItemClick(model.getPastelCode());
+            }
+        });
     }
 
     @Override

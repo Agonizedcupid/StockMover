@@ -5,13 +5,18 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aariyan.stockmover.Adapter.ProductAdapter;
+import com.aariyan.stockmover.Common.Constant;
 import com.aariyan.stockmover.Database.DatabaseAdapter;
+import com.aariyan.stockmover.Interface.ItemClickListener;
 import com.aariyan.stockmover.Model.ProductsSyncModel;
 import com.aariyan.stockmover.R;
 import com.google.android.material.switchmaterial.SwitchMaterial;
@@ -19,7 +24,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SelectionActivity extends AppCompatActivity implements View.OnClickListener {
+public class SelectionActivity extends AppCompatActivity implements View.OnClickListener, ItemClickListener {
 
     private SwitchMaterial switching;
     private CardView barcodeCard;
@@ -27,7 +32,11 @@ public class SelectionActivity extends AppCompatActivity implements View.OnClick
     DatabaseAdapter databaseAdapter;
     private ProductAdapter adapter;
 
+    private TextView nextBtn;
+
     private ImageView backBtn;
+
+    private EditText enterBarcode;
 
     boolean checkClick = false;
 
@@ -40,8 +49,10 @@ public class SelectionActivity extends AppCompatActivity implements View.OnClick
         setContentView(R.layout.activity_selection);
         databaseAdapter = new DatabaseAdapter(this);
 
-
         initUI();
+
+        Constant.STOCK_TYPE = getIntent().getStringExtra("type");
+
     }
 
     private void initUI() {
@@ -56,6 +67,11 @@ public class SelectionActivity extends AppCompatActivity implements View.OnClick
         backBtn = findViewById(R.id.backBtn);
         backBtn.setOnClickListener(this);
 
+        nextBtn = findViewById(R.id.nextBtn);
+        nextBtn.setOnClickListener(this);
+
+        enterBarcode = findViewById(R.id.enterBarcode);
+
 
         loadProduct();
 
@@ -65,7 +81,7 @@ public class SelectionActivity extends AppCompatActivity implements View.OnClick
         list.clear();
         list = databaseAdapter.getProduct();
         if (list.size() > 0) {
-            adapter = new ProductAdapter(SelectionActivity.this, list);
+            adapter = new ProductAdapter(SelectionActivity.this, list, SelectionActivity.this);
             productRecyclerView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
         } else {
@@ -79,11 +95,13 @@ public class SelectionActivity extends AppCompatActivity implements View.OnClick
         switch (id) {
             case R.id.switching:
                 if (switching.isChecked()) {
+                    Constant.selectionType = Constant.typeProduct;
                     productRecyclerView.setVisibility(View.VISIBLE);
                     barcodeCard.setVisibility(View.GONE);
                 } else {
                     productRecyclerView.setVisibility(View.GONE);
                     barcodeCard.setVisibility(View.VISIBLE);
+                    Constant.selectionType = Constant.typeQRCode;
                 }
                 break;
 
@@ -91,6 +109,22 @@ public class SelectionActivity extends AppCompatActivity implements View.OnClick
                 checkClick = true;
                 onBackPressed();
                 break;
+
+            case R.id.nextBtn:
+                moveToAction();
+                break;
+        }
+    }
+
+    private boolean isBarcodeValidated() {
+        List<ProductsSyncModel> productList = databaseAdapter.getProductByBarcode(enterBarcode.getText().toString().trim());
+        if (productList.size() > 0) {
+            Constant.PRODUCT_CODE = productList.get(0).getPastelCode();
+            return true;
+        } else {
+            loadProduct();
+            Toast.makeText(this, "No Product Found with "+enterBarcode.getText().toString(), Toast.LENGTH_SHORT).show();
+            return false;
         }
     }
 
@@ -102,5 +136,17 @@ public class SelectionActivity extends AppCompatActivity implements View.OnClick
             super.onBackPressed();
         }
 
+    }
+
+    @Override
+    public void onItemClick(String productId) {
+        Constant.PRODUCT_CODE = productId;
+        startActivity(new Intent(SelectionActivity.this, ActionActivity.class));
+    }
+
+    private void moveToAction() {
+        if(isBarcodeValidated()) {
+            startActivity(new Intent(SelectionActivity.this, ActionActivity.class));
+        }
     }
 }

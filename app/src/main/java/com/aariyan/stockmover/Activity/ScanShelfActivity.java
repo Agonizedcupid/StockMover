@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.aariyan.stockmover.Common.Constant;
 import com.aariyan.stockmover.Database.DatabaseAdapter;
 import com.aariyan.stockmover.Interface.ProductSyncInterface;
 import com.aariyan.stockmover.Model.LocationSyncModel;
@@ -46,7 +47,8 @@ public class ScanShelfActivity extends AppCompatActivity implements View.OnClick
         initUI();
 
         if (getIntent() != null) {
-            if (getIntent().getStringExtra("type").equals("out")) {
+            Constant.STOCK_TYPE = getIntent().getStringExtra("type");
+            if (Constant.STOCK_TYPE.equals("out")) {
                 topTitle.setText("Stock Out");
             } else {
                 topTitle.setText("Stock-In");
@@ -81,7 +83,7 @@ public class ScanShelfActivity extends AppCompatActivity implements View.OnClick
                 listOfLocation = databaseAdapter.getLocation(enterLocation.getText().toString());
                 if (listOfLocation.size() > 0) {
                     intent = new Intent(ScanShelfActivity.this, SelectionActivity.class);
-                    intent.putExtra("type", "out");
+                    intent.putExtra("type", Constant.STOCK_TYPE);
                     startActivity(intent);
                 } else {
                     enterLocation.setError("Invalid Location");
