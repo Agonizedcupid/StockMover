@@ -19,9 +19,10 @@
         <entry key="app/src/main/res/drawable/yellow_btn_background_non_pressed.xml" value="0.1705" />
         <entry key="app/src/main/res/layout/activity_action.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/activity_home.xml" value="0.25" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.22" />
         <entry key="app/src/main/res/layout/activity_scan_shelf.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/activity_selection.xml" value="0.35625" />
+        <entry key="app/src/main/res/layout/app_close_dialog.xml" value="0.19375" />
         <entry key="app/src/main/res/layout/dialog_layout.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/single_product_layout.xml" value="0.35625" />
       </map>

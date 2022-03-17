@@ -16,16 +16,26 @@ import com.aariyan.stockmover.Interface.ProductSyncInterface;
 import com.aariyan.stockmover.MainActivity;
 import com.aariyan.stockmover.Model.LocationSyncModel;
 import com.aariyan.stockmover.Model.ProductsSyncModel;
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import dmax.dialog.SpotsDialog;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.core.Scheduler;
@@ -50,40 +60,96 @@ public class ApiCalling {
     private List<LocationSyncModel> listOfLocation = new ArrayList<>();
     int count = 0;
 
+    private RequestQueue requestQueue;
+
     public ApiCalling(Context context) {
         this.context = context;
         adapter = new DatabaseAdapter(context);
         activity = (Activity) context;
+        requestQueue = Volley.newRequestQueue(context);
     }
 
     public void postLogIn(String userName, String pinCode, ProgressBar progressBar) {
-        logInDisposable.add(apis.loggedIn(userName, Integer.parseInt(pinCode))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<ResponseBody>() {
+
+        String URL = MainActivity.getURL() + "GrvApp/users.php";
+        StringRequest mStringRequest = new StringRequest(
+                Request.Method.POST,
+                URL,
+                new Response.Listener<String>() {
                     @Override
-                    public void accept(ResponseBody responseBody) throws Throwable {
-                        JSONArray root = new JSONArray(responseBody.string());
-                        if (root.length() > 0) {
-                            for (int i = 0; i < root.length(); i++) {
-                                JSONObject single = root.getJSONObject(i);
-                                Constant.userID = single.getString("UserID");
-                                context.startActivity(new Intent(context, HomeActivity.class));
+                    public void onResponse(String responseBody) {
+                        try {
+                            JSONArray root = new JSONArray(responseBody);
+                            if (root.length() > 0) {
+                                for (int i = 0; i < root.length(); i++) {
+                                    JSONObject single = root.getJSONObject(i);
+                                    Constant.userID = single.getString("UserID");
+                                    context.startActivity(new Intent(context, HomeActivity.class));
+                                    progressBar.setVisibility(View.GONE);
+                                }
+                            } else {
                                 progressBar.setVisibility(View.GONE);
+                                Toast.makeText(context, "Invalid User!", Toast.LENGTH_SHORT).show();
                             }
-                        } else {
+                        } catch (Exception throwable) {
+                            Toast.makeText(context, ""+throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                            Log.d("RESPONSE", throwable.getMessage());
                             progressBar.setVisibility(View.GONE);
-                            Toast.makeText(context, "Invalid User!", Toast.LENGTH_SHORT).show();
                         }
                     }
-                }, new Consumer<Throwable>() {
+                },
+                new Response.ErrorListener() {
                     @Override
-                    public void accept(Throwable throwable) throws Throwable {
+                    public void onErrorResponse(VolleyError throwable) {
+                        Toast.makeText(context, ""+throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e("TAGEEEE", "onErrorResponse: " + throwable.getMessage());
                         progressBar.setVisibility(View.GONE);
-                        Toast.makeText(context, "Error: " + throwable.getMessage(), Toast.LENGTH_SHORT).show();
                     }
-                }));
+                }
+        ) {
+            @Nullable
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<>();
+                map.put("username", userName);
+                map.put("pincode", pinCode);
+                return map;
+            }
+        };
+
+        requestQueue.add(mStringRequest);
     }
+
+
+//    public void postLogIn(String userName, String pinCode, ProgressBar progressBar) {
+//        ApiInterface apis = RetrofitClient.getClient().create(ApiInterface.class);
+//        logInDisposable.add(apis.loggedIn(userName, Integer.parseInt(pinCode))
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new Consumer<ResponseBody>() {
+//                    @Override
+//                    public void accept(ResponseBody responseBody) throws Throwable {
+//                        JSONArray root = new JSONArray(responseBody.string());
+//                        if (root.length() > 0) {
+//                            for (int i = 0; i < root.length(); i++) {
+//                                JSONObject single = root.getJSONObject(i);
+//                                Constant.userID = single.getString("UserID");
+//                                context.startActivity(new Intent(context, HomeActivity.class));
+//                                progressBar.setVisibility(View.GONE);
+//                            }
+//                        } else {
+//                            progressBar.setVisibility(View.GONE);
+//                            Toast.makeText(context, "Invalid User!", Toast.LENGTH_SHORT).show();
+//                        }
+//                    }
+//                }, new Consumer<Throwable>() {
+//                    @Override
+//                    public void accept(Throwable throwable) throws Throwable {
+//                        progressBar.setVisibility(View.GONE);
+//                        Toast.makeText(context, "Error: " + throwable.getMessage(), Toast.LENGTH_SHORT).show();
+//                    }
+//                }));
+//    }
 
     //Product Sync:
     public void productSync(ProgressBar progressBar, ProductSyncInterface productSyncInterface) {
