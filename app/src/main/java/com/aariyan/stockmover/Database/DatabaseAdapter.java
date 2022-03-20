@@ -6,22 +6,26 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.location.Location;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
 
+import com.aariyan.stockmover.Interface.DeletePostingData;
 import com.aariyan.stockmover.Model.LocationSyncModel;
 import com.aariyan.stockmover.Model.ProductsSyncModel;
+import com.aariyan.stockmover.Model.StockModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DatabaseAdapter {
+public class DatabaseAdapter implements DeletePostingData{
 
 
     DatabaseHelper helper;
     private List<ProductsSyncModel> productList = new ArrayList<>();
     private List<LocationSyncModel> locationList = new ArrayList<>();
+    private List<StockModel> stockList = new ArrayList<>();
 
     public static boolean checkProduct = false;
     public static boolean checkLocations = false;
@@ -152,6 +156,26 @@ public class DatabaseAdapter {
         return id;
     }
 
+    //validate location:
+    public List<StockModel> getStock() {
+
+        stockList.clear();
+        SQLiteDatabase database = helper.getWritableDatabase();
+        String[] columns = {DatabaseHelper.UID,DatabaseHelper.productCode,DatabaseHelper.date, DatabaseHelper.quantity,DatabaseHelper.stockType };
+
+        Cursor cursor = database.query(DatabaseHelper.PRODUCT_TABLE_NAME, columns, null, null, null, null, null);
+        while (cursor.moveToNext()) {
+            StockModel model = new StockModel(
+                    cursor.getString(1),
+                    cursor.getString(2),
+                    cursor.getString(3),
+                    cursor.getString(4)
+            );
+            stockList.add(model);
+        }
+        return stockList;
+    }
+
 
     public void dropProductTable() {
         SQLiteDatabase database = helper.getWritableDatabase();
@@ -159,10 +183,25 @@ public class DatabaseAdapter {
         database.execSQL(DatabaseHelper.CREATE_PRODUCT_TABLE);
     }
 
+    public void dropStockTable() {
+        SQLiteDatabase database = helper.getWritableDatabase();
+        database.execSQL(DatabaseHelper.DROP_STOCK_IN_OUT_TABLE);
+        database.execSQL(DatabaseHelper.CREATE_STOCK_IN_OUT_TABLE);
+    }
+
     public void dropLocationTable() {
         SQLiteDatabase database = helper.getWritableDatabase();
         database.execSQL(DatabaseHelper.DROP_LOCATION_TABLE);
         database.execSQL(DatabaseHelper.CREATE_LOCATION_TABLE);
+    }
+
+    @Override
+    public void trackDelete(String flag) {
+        if (flag.equals("yes")) {
+            dropStockTable();
+        } else {
+            Toast.makeText(helper.context, "Unable to post data!", Toast.LENGTH_SHORT).show();
+        }
     }
 
 

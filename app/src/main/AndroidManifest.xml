@@ -13,6 +13,9 @@
         android:theme="@style/Theme.StockMover"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".Activity.UploadDocument"
+            android:exported="false" />
+        <activity
             android:name=".Activity.ActionActivity"
             android:exported="false" />
         <activity
