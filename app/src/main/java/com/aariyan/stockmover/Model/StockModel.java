@@ -2,45 +2,110 @@ package com.aariyan.stockmover.Model;
 
 public class StockModel {
 
-    private String productCode,date,quantity,stockType;
-    public StockModel(){}
+    private String shelffrom,ID,DeviceGUI_tick,productfrombarcode,Qty,shelfto,producttobarcode,confirmqty;
+    private String Expiry,productfromcode,producttocode;
 
-    public StockModel(String productCode, String date, String quantity, String stockType) {
-        this.productCode = productCode;
-        this.date = date;
-        this.quantity = quantity;
-        this.stockType = stockType;
+    public StockModel() {}
+
+    //For only database retrieval:
+    public StockModel(String shelffrom, String productfrombarcode, String qty, String shelfto, String producttobarcode, String confirmqty, String expiry, String productfromcode, String producttocode) {
+        this.shelffrom = shelffrom;
+        this.productfrombarcode = productfrombarcode;
+        Qty = qty;
+        this.shelfto = shelfto;
+        this.producttobarcode = producttobarcode;
+        this.confirmqty = confirmqty;
+        Expiry = expiry;
+        this.productfromcode = productfromcode;
+        this.producttocode = producttocode;
     }
 
-    public String getProductCode() {
-        return productCode;
+
+    public String getShelffrom() {
+        return shelffrom;
     }
 
-    public void setProductCode(String productCode) {
-        this.productCode = productCode;
+    public void setShelffrom(String shelffrom) {
+        this.shelffrom = shelffrom;
     }
 
-    public String getDate() {
-        return date;
+    public String getID() {
+        return ID;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setID(String ID) {
+        this.ID = ID;
     }
 
-    public String getQuantity() {
-        return quantity;
+    public String getDeviceGUI_tick() {
+        return DeviceGUI_tick;
     }
 
-    public void setQuantity(String quantity) {
-        this.quantity = quantity;
+    public void setDeviceGUI_tick(String deviceGUI_tick) {
+        DeviceGUI_tick = deviceGUI_tick;
     }
 
-    public String getStockType() {
-        return stockType;
+    public String getProductfrombarcode() {
+        return productfrombarcode;
     }
 
-    public void setStockType(String stockType) {
-        this.stockType = stockType;
+    public void setProductfrombarcode(String productfrombarcode) {
+        this.productfrombarcode = productfrombarcode;
+    }
+
+    public String getQty() {
+        return Qty;
+    }
+
+    public void setQty(String qty) {
+        Qty = qty;
+    }
+
+    public String getShelfto() {
+        return shelfto;
+    }
+
+    public void setShelfto(String shelfto) {
+        this.shelfto = shelfto;
+    }
+
+    public String getProducttobarcode() {
+        return producttobarcode;
+    }
+
+    public void setProducttobarcode(String producttobarcode) {
+        this.producttobarcode = producttobarcode;
+    }
+
+    public String getConfirmqty() {
+        return confirmqty;
+    }
+
+    public void setConfirmqty(String confirmqty) {
+        this.confirmqty = confirmqty;
+    }
+
+    public String getExpiry() {
+        return Expiry;
+    }
+
+    public void setExpiry(String expiry) {
+        Expiry = expiry;
+    }
+
+    public String getProductfromcode() {
+        return productfromcode;
+    }
+
+    public void setProductfromcode(String productfromcode) {
+        this.productfromcode = productfromcode;
+    }
+
+    public String getProducttocode() {
+        return producttocode;
+    }
+
+    public void setProducttocode(String producttocode) {
+        this.producttocode = producttocode;
     }
 }

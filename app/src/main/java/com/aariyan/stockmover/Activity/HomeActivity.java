@@ -134,7 +134,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private void uploadDocument() {
         progressBar.setVisibility(View.VISIBLE);
         posting.clear();
-        list = databaseAdapter.getStock();
+        //list = databaseAdapter.getStock();
 //        posting.clear();
 //        for (int i = 0; i < list.size(); i++) {
 //            posting.add(new StockModel(
