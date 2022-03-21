@@ -2,31 +2,28 @@ package com.aariyan.stockmover.Model;
 
 public class StockModel {
 
-    private String shelffrom,ID,DeviceGUI_tick,productfrombarcode,Qty,shelfto,producttobarcode,confirmqty;
-    private String Expiry,productfromcode,producttocode;
+    private String shelf, ID, DeviceGUI_tick, Qty, barcode, Expiry, productCode, strTransactionType;
 
-    public StockModel() {}
+    public StockModel() {
+    }
 
-    //For only database retrieval:
-    public StockModel(String shelffrom, String productfrombarcode, String qty, String shelfto, String producttobarcode, String confirmqty, String expiry, String productfromcode, String producttocode) {
-        this.shelffrom = shelffrom;
-        this.productfrombarcode = productfrombarcode;
+    public StockModel(String ID, String shelf, String deviceGUI_tick, String qty, String barcode, String expiry, String productCode, String strTransactionType) {
+        this.ID = ID;
+        this.shelf = shelf;
+        DeviceGUI_tick = deviceGUI_tick;
         Qty = qty;
-        this.shelfto = shelfto;
-        this.producttobarcode = producttobarcode;
-        this.confirmqty = confirmqty;
+        this.barcode = barcode;
         Expiry = expiry;
-        this.productfromcode = productfromcode;
-        this.producttocode = producttocode;
+        this.productCode = productCode;
+        this.strTransactionType = strTransactionType;
     }
 
-
-    public String getShelffrom() {
-        return shelffrom;
+    public String getShelf() {
+        return shelf;
     }
 
-    public void setShelffrom(String shelffrom) {
-        this.shelffrom = shelffrom;
+    public void setShelf(String shelf) {
+        this.shelf = shelf;
     }
 
     public String getID() {
@@ -45,14 +42,6 @@ public class StockModel {
         DeviceGUI_tick = deviceGUI_tick;
     }
 
-    public String getProductfrombarcode() {
-        return productfrombarcode;
-    }
-
-    public void setProductfrombarcode(String productfrombarcode) {
-        this.productfrombarcode = productfrombarcode;
-    }
-
     public String getQty() {
         return Qty;
     }
@@ -61,28 +50,12 @@ public class StockModel {
         Qty = qty;
     }
 
-    public String getShelfto() {
-        return shelfto;
+    public String getBarcode() {
+        return barcode;
     }
 
-    public void setShelfto(String shelfto) {
-        this.shelfto = shelfto;
-    }
-
-    public String getProducttobarcode() {
-        return producttobarcode;
-    }
-
-    public void setProducttobarcode(String producttobarcode) {
-        this.producttobarcode = producttobarcode;
-    }
-
-    public String getConfirmqty() {
-        return confirmqty;
-    }
-
-    public void setConfirmqty(String confirmqty) {
-        this.confirmqty = confirmqty;
+    public void setBarcode(String barcode) {
+        this.barcode = barcode;
     }
 
     public String getExpiry() {
@@ -93,19 +66,19 @@ public class StockModel {
         Expiry = expiry;
     }
 
-    public String getProductfromcode() {
-        return productfromcode;
+    public String getProductCode() {
+        return productCode;
     }
 
-    public void setProductfromcode(String productfromcode) {
-        this.productfromcode = productfromcode;
+    public void setProductCode(String productCode) {
+        this.productCode = productCode;
     }
 
-    public String getProducttocode() {
-        return producttocode;
+    public String getStrTransactionType() {
+        return strTransactionType;
     }
 
-    public void setProducttocode(String producttocode) {
-        this.producttocode = producttocode;
+    public void setStrTransactionType(String strTransactionType) {
+        this.strTransactionType = strTransactionType;
     }
 }

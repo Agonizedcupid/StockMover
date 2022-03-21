@@ -6,11 +6,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.location.Location;
+import android.provider.Settings;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
 
+import com.aariyan.stockmover.Activity.HomeActivity;
 import com.aariyan.stockmover.Interface.DeletePostingData;
 import com.aariyan.stockmover.Model.LocationSyncModel;
 import com.aariyan.stockmover.Model.ProductsSyncModel;
@@ -19,7 +21,7 @@ import com.aariyan.stockmover.Model.StockModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DatabaseAdapter implements DeletePostingData {
+public class DatabaseAdapter {
 
 
     DatabaseHelper helper;
@@ -142,79 +144,47 @@ public class DatabaseAdapter implements DeletePostingData {
 
 
     //Insert STOCK_IN_OUT:
-//    public long insertStocks(String productCode, String expireDate, String quantity, String type) {
-//        SQLiteDatabase database = helper.getWritableDatabase();
-//
-//        ContentValues contentValues = new ContentValues();
-//        contentValues.put(DatabaseHelper.productCode, productCode);
-//        contentValues.put(DatabaseHelper.date, expireDate);
-//        contentValues.put(DatabaseHelper.quantity, quantity);
-//        contentValues.put(DatabaseHelper.stockType, type);
-//
-//        long id = database.insert(DatabaseHelper.PRODUCT_STOCK_IN_OUT_NAME, null, contentValues);
-//        return id;
-//    }
-
-    //Insert Stock In Stock Out:
-    public long insertStockOut(String shelfFrom, String productFromBarcode, String qty, String productFromCode) {
+    public long insertStocks(String shelf, String Qty, String barcode, String Expiry,String productCode, String strTransactionType) {
         SQLiteDatabase database = helper.getWritableDatabase();
+
         ContentValues contentValues = new ContentValues();
-        contentValues.put(DatabaseHelper.shelffrom, shelfFrom);
-        contentValues.put(DatabaseHelper.productfrombarcode, productFromBarcode);
-        contentValues.put(DatabaseHelper.Qty, qty);
-        contentValues.put(DatabaseHelper.productfromcode, productFromCode);
-        contentValues.put(DatabaseHelper.out, 0);
+        contentValues.put(DatabaseHelper.shelf, shelf);
+        contentValues.put(DatabaseHelper.Qty, Qty);
+        contentValues.put(DatabaseHelper.barcode, barcode);
+        contentValues.put(DatabaseHelper.Expiry, Expiry);
+        contentValues.put(DatabaseHelper.productCode, productCode);
+        contentValues.put(DatabaseHelper.strTransactionType, strTransactionType);
 
         long id = database.insert(DatabaseHelper.PRODUCT_STOCK_IN_OUT_NAME, null, contentValues);
         return id;
     }
 
-    public long insertStockIn(String shelfTo, String productToBarcode, String confirmQty, String expireDate,
-                              String productToCode, int type) {
-
-        SQLiteDatabase database = helper.getWritableDatabase();
-
-        String selection = DatabaseHelper.productfrombarcode + "=?";
-        String[] args = {productToBarcode};
-
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(DatabaseHelper.shelfto, shelfTo);
-        contentValues.put(DatabaseHelper.producttobarcode, productToBarcode);
-        contentValues.put(DatabaseHelper.confirmqty, confirmQty);
-        contentValues.put(DatabaseHelper.Expiry, expireDate);
-        contentValues.put(DatabaseHelper.producttocode, productToCode);
-        contentValues.put(DatabaseHelper.out, 1);
-
-        long id = database.update(DatabaseHelper.PRODUCT_STOCK_IN_OUT_NAME, contentValues, selection, args);
-        return id;
-    }
 
     //validate location:
-    public List<StockModel> getStock() {
+    public List<StockModel> getStock(String deviceId) {
         stockList.clear();
         SQLiteDatabase database = helper.getWritableDatabase();
-        String[] columns = {DatabaseHelper.UID, DatabaseHelper.shelffrom, DatabaseHelper.productfrombarcode,
-                DatabaseHelper.Qty, DatabaseHelper.productfromcode, DatabaseHelper.out,
-                DatabaseHelper.shelfto, DatabaseHelper.producttobarcode, DatabaseHelper.confirmqty, DatabaseHelper.Expiry,
-                DatabaseHelper.producttocode, DatabaseHelper.in};
+        String[] columns = {DatabaseHelper.UID, DatabaseHelper.shelf, DatabaseHelper.Qty,
+                DatabaseHelper.barcode, DatabaseHelper.Expiry, DatabaseHelper.productCode, DatabaseHelper.strTransactionType};
 
         Cursor cursor = database.query(DatabaseHelper.PRODUCT_STOCK_IN_OUT_NAME, columns, null, null, null, null, null);
         while (cursor.moveToNext()) {
             StockModel model = new StockModel(
-                    cursor.getString(1),
-                    cursor.getString(2),
-                    cursor.getString(3),
-                    cursor.getString(4),
-                    cursor.getString(5),
-                    cursor.getString(6),
-                    cursor.getString(7),
-                    cursor.getString(8),
-                    cursor.getString(9)
+                    "" + cursor.getString(0),
+                    "" + cursor.getString(1),
+                    ""+deviceId,
+                    "" + cursor.getString(2),
+                    "" + cursor.getString(3),
+                    "" + cursor.getString(4),
+                    "" + cursor.getString(5),
+                    "" + cursor.getString(6)
             );
             stockList.add(model);
         }
         return stockList;
     }
+
+
 
 
     public void dropProductTable() {
@@ -235,18 +205,12 @@ public class DatabaseAdapter implements DeletePostingData {
         database.execSQL(DatabaseHelper.CREATE_LOCATION_TABLE);
     }
 
-    @Override
-    public void trackDelete(String flag) {
-        if (flag.equals("yes")) {
-            dropStockTable();
-        } else {
-            Toast.makeText(helper.context, "Unable to post data!", Toast.LENGTH_SHORT).show();
-        }
-    }
 
 
     class DatabaseHelper extends SQLiteOpenHelper {
         private Context context;
+
+
 
         private static final String DATABASE_NAME = "stock_mover.db";
         private static final int VERSION_NUMBER = 5;
@@ -286,34 +250,22 @@ public class DatabaseAdapter implements DeletePostingData {
         //Stock_out_in Table:
         //Stock out:
         private static final String PRODUCT_STOCK_IN_OUT_NAME = "stock_in_out";
-        private static final String shelffrom = "shelffrom";
-        private static final String productfrombarcode = "productfrombarcode";
+        private static final String shelf = "shelf";
         private static final String Qty = "Qty";
-        private static final String productfromcode = "productfromcode";
-        private static final String out = "stockOut";
-
-        //stock In
-        private static final String shelfto = "shelfto";
-        private static final String producttobarcode = "producttobarcode";
-        private static final String confirmqty = "confirmqty";
+        private static final String barcode = "barcode";
         private static final String Expiry = "Expiry";
-        private static final String producttocode = "producttocode";
-        private static final String in = "stockIn";
+        private static final String productCode = "productCode";
+        private static final String strTransactionType = "strTransactionType";
 
         //Creating Stock_out_in the table:
         private static final String CREATE_STOCK_IN_OUT_TABLE = "CREATE TABLE " + PRODUCT_STOCK_IN_OUT_NAME
                 + " (" + UID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + shelffrom + " VARCHAR(255),"
-                + productfrombarcode + " VARCHAR(255),"
+                + shelf + " VARCHAR(255),"
                 + Qty + " VARCHAR(255),"
-                + productfromcode + " VARCHAR(255),"
-                + shelfto + " VARCHAR(255),"
-                + producttobarcode + " VARCHAR(255),"
-                + confirmqty + " VARCHAR(255),"
+                + barcode + " VARCHAR(255),"
                 + Expiry + " VARCHAR(255),"
-                + out + " INTEGER,"
-                + in + " INTEGER,"
-                + producttocode + " VARCHAR(255));";
+                + productCode + " VARCHAR(255),"
+                + strTransactionType + " VARCHAR(255));";
         private static final String DROP_STOCK_IN_OUT_TABLE = "DROP TABLE IF EXISTS " + PRODUCT_STOCK_IN_OUT_NAME;
 
 

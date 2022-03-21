@@ -84,6 +84,7 @@ public class ScanShelfActivity extends AppCompatActivity implements View.OnClick
                 if (listOfLocation.size() > 0) {
                     intent = new Intent(ScanShelfActivity.this, SelectionActivity.class);
                     intent.putExtra("type", Constant.STOCK_TYPE);
+                    Constant.location = enterLocation.getText().toString();
                     startActivity(intent);
                 } else {
                     enterLocation.setError("Invalid Location");

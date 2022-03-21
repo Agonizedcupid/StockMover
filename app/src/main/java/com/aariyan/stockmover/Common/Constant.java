@@ -10,4 +10,8 @@ public class Constant {
     public static String PRODUCT_CODE = "";
 
     public static String STOCK_TYPE = "";
+
+    public static String location = "";
+
+
 }

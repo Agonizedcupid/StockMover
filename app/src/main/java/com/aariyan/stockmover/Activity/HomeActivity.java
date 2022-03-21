@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -48,6 +49,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     DeletePostingData deletePostingData;
 
+    List<StockModel> getStock = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,6 +82,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         progressBar = findViewById(R.id.pBar);
 
+        getStock = databaseAdapter.getStock(deviceId());
     }
 
     @Override
@@ -131,19 +135,17 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    public String deviceId() {
+        Long tsLong = System.currentTimeMillis() / 1000;
+        String ts = tsLong.toString();
+        String subscriberId = ts + "-" + Settings.Secure.getString(getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+        return subscriberId;
+    }
+
     private void uploadDocument() {
         progressBar.setVisibility(View.VISIBLE);
-        posting.clear();
-        //list = databaseAdapter.getStock();
-//        posting.clear();
-//        for (int i = 0; i < list.size(); i++) {
-//            posting.add(new StockModel(
-//                        ""+list.get(i).getProductCode(),
-//
-//            ));
-//        }
-
-        if (posting.size() > 0) {
+        if (getStock.size() > 0) {
             StringRequest mStringRequest = new StringRequest(
                     Request.Method.POST,
                     "http://102.37.0.48/StockMover/postLines.php",
@@ -151,23 +153,22 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                         @Override
                         public void onResponse(String response) {
                             //Log.d("FEEDBACK", response);
-                            Toast.makeText(HomeActivity.this, response.toString() + "Posted successfully!", Toast.LENGTH_SHORT).show();
-                            deletePostingData.trackDelete("yes");
+                            Toast.makeText(HomeActivity.this, response.toString() + " Posted successfully!", Toast.LENGTH_SHORT).show();
                             //Now Removing the data from SQLite:
                             //deleteUploadedJobs();
                             progressBar.setVisibility(View.GONE);
+                            databaseAdapter.dropStockTable();
                         }
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     progressBar.setVisibility(View.GONE);
-                    deletePostingData.trackDelete("no");
                 }
             }
             ) {
                 @Override
                 public byte[] getBody() throws AuthFailureError {
-                    String jsonString = new Gson().toJson(list).toString();
+                    String jsonString = new Gson().toJson(getStock).toString();
                     return jsonString.getBytes();
                 }
             };
@@ -175,7 +176,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             Toast.makeText(HomeActivity.this, "Not enough data!", Toast.LENGTH_SHORT).show();
             progressBar.setVisibility(View.GONE);
-            deletePostingData.trackDelete("no");
         }
 
     }

@@ -3,6 +3,7 @@ package com.aariyan.stockmover.Activity;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -107,9 +108,13 @@ public class ActionActivity extends AppCompatActivity {
     }
 
     private void saveOnLocalDatabase(String quantity, String date) {
-        long id = databaseAdapter.insertStocks(Constant.PRODUCT_CODE, date, quantity, Constant.STOCK_TYPE);
+        //long id = databaseAdapter.insertStocks(Constant.PRODUCT_CODE, date, quantity, Constant.STOCK_TYPE);
+        long id = databaseAdapter.insertStocks("" + Constant.location, "" + quantity, "", "" + date,
+                "" + Constant.PRODUCT_CODE, "");
         if (id > 0) {
             Toast.makeText(this, "Inserted!", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(ActionActivity.this, HomeActivity.class));
+            finish();
         } else {
             Toast.makeText(this, "Failed to insert!", Toast.LENGTH_SHORT).show();
         }
