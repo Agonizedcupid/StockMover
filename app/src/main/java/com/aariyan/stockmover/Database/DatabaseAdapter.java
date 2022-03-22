@@ -213,7 +213,7 @@ public class DatabaseAdapter {
 
 
         private static final String DATABASE_NAME = "stock_mover.db";
-        private static final int VERSION_NUMBER = 5;
+        private static final int VERSION_NUMBER = 6;
 
         //Product Table:
         private static final String PRODUCT_TABLE_NAME = "products";

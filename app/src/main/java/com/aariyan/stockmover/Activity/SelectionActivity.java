@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -32,6 +34,8 @@ public class SelectionActivity extends AppCompatActivity implements View.OnClick
     DatabaseAdapter databaseAdapter;
     private ProductAdapter adapter;
 
+    private EditText searchProduct;
+
     private TextView nextBtn;
 
     private ImageView backBtn;
@@ -39,6 +43,7 @@ public class SelectionActivity extends AppCompatActivity implements View.OnClick
     private EditText enterBarcode;
 
     boolean checkClick = false;
+    private boolean checkSelection = false;
 
 
     private List<ProductsSyncModel> list = new ArrayList<>();
@@ -52,6 +57,7 @@ public class SelectionActivity extends AppCompatActivity implements View.OnClick
         initUI();
 
         Constant.STOCK_TYPE = getIntent().getStringExtra("type");
+        Constant.location = getIntent().getStringExtra("loc");
 
     }
 
@@ -59,6 +65,8 @@ public class SelectionActivity extends AppCompatActivity implements View.OnClick
 
         switching = findViewById(R.id.switching);
         switching.setOnClickListener(this);
+
+        searchProduct = findViewById(R.id.searchProduct);
 
         barcodeCard = findViewById(R.id.barcodeLayout);
         productRecyclerView = findViewById(R.id.productRecyclerview);
@@ -71,6 +79,23 @@ public class SelectionActivity extends AppCompatActivity implements View.OnClick
         nextBtn.setOnClickListener(this);
 
         enterBarcode = findViewById(R.id.enterBarcode);
+
+        searchProduct.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                adapter.getFilter().filter(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
 
 
         loadProduct();
@@ -98,10 +123,14 @@ public class SelectionActivity extends AppCompatActivity implements View.OnClick
                     Constant.selectionType = Constant.typeProduct;
                     productRecyclerView.setVisibility(View.VISIBLE);
                     barcodeCard.setVisibility(View.GONE);
+                    searchProduct.setVisibility(View.VISIBLE);
+                    checkSelection = false;
                 } else {
                     productRecyclerView.setVisibility(View.GONE);
                     barcodeCard.setVisibility(View.VISIBLE);
                     Constant.selectionType = Constant.typeQRCode;
+                    searchProduct.setVisibility(View.GONE);
+                    checkSelection = true;
                 }
                 break;
 
@@ -139,13 +168,15 @@ public class SelectionActivity extends AppCompatActivity implements View.OnClick
     }
 
     @Override
-    public void onItemClick(String productId) {
+    public void onItemClick(String productId, String barcode) {
         Constant.PRODUCT_CODE = productId;
+        Constant.BARCODE = barcode;
         startActivity(new Intent(SelectionActivity.this, ActionActivity.class));
     }
 
     private void moveToAction() {
         if(isBarcodeValidated()) {
+            Constant.BARCODE = enterBarcode.getText().toString();
             startActivity(new Intent(SelectionActivity.this, ActionActivity.class));
         }
     }

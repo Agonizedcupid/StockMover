@@ -98,19 +98,19 @@ public class ActionActivity extends AppCompatActivity {
                 }
 
                 if (Constant.STOCK_TYPE.equals("out")) {
-                    saveOnLocalDatabase(enterQuantity.getText().toString(), date);
+                    saveOnLocalDatabase(enterQuantity.getText().toString(), date, "OUT");
                 } else {
-                    saveOnLocalDatabase(enterQuantity.getText().toString(), "in");
+                    saveOnLocalDatabase(enterQuantity.getText().toString(), "in", "IN");
                 }
 
             }
         });
     }
 
-    private void saveOnLocalDatabase(String quantity, String date) {
+    private void saveOnLocalDatabase(String quantity, String date, String type) {
         //long id = databaseAdapter.insertStocks(Constant.PRODUCT_CODE, date, quantity, Constant.STOCK_TYPE);
         long id = databaseAdapter.insertStocks("" + Constant.location, "" + quantity, "", "" + date,
-                "" + Constant.PRODUCT_CODE, "");
+                "" + Constant.PRODUCT_CODE, ""+type);
         if (id > 0) {
             Toast.makeText(this, "Inserted!", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(ActionActivity.this, HomeActivity.class));
