@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.aariyan.stockmover.Database.DatabaseAdapter;
 import com.aariyan.stockmover.Interface.DeletePostingData;
 import com.aariyan.stockmover.Interface.ProductSyncInterface;
+import com.aariyan.stockmover.MainActivity;
 import com.aariyan.stockmover.Model.PostLines;
 import com.aariyan.stockmover.Model.ProductsSyncModel;
 import com.aariyan.stockmover.Model.StockModel;
@@ -148,7 +149,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         if (getStock.size() > 0) {
             StringRequest mStringRequest = new StringRequest(
                     Request.Method.POST,
-                    "http://102.37.0.48/StockMover/postLines.php",
+                    MainActivity.getURL()+"StockMover/postLines.php",
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
