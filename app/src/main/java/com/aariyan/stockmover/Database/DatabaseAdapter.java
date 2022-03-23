@@ -20,6 +20,7 @@ import com.aariyan.stockmover.Model.StockModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class DatabaseAdapter {
 
@@ -79,7 +80,7 @@ public class DatabaseAdapter {
         SQLiteDatabase database = helper.getWritableDatabase();
         //select * from tableName where name = ? and customerName = ?:
         // String selection = DatabaseHelper.USER_NAME+" where ? AND "+DatabaseHelper.CUSTOMER_NAME+" LIKE ?";
-        String selection = DatabaseHelper.strBinLocationName + "=?";
+        String selection = DatabaseHelper.strBinLocationName + "=?".toUpperCase(Locale.ROOT);
 
 
         String[] args = {input};
@@ -144,7 +145,7 @@ public class DatabaseAdapter {
 
 
     //Insert STOCK_IN_OUT:
-    public long insertStocks(String shelf, String Qty, String barcode, String Expiry,String productCode, String strTransactionType) {
+    public long insertStocks(String shelf, String Qty, String barcode, String Expiry, String productCode, String strTransactionType) {
         SQLiteDatabase database = helper.getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
@@ -172,7 +173,7 @@ public class DatabaseAdapter {
             StockModel model = new StockModel(
                     "" + cursor.getString(0),
                     "" + cursor.getString(1),
-                    ""+deviceId,
+                    "" + deviceId,
                     "" + cursor.getString(2),
                     "" + cursor.getString(3),
                     "" + cursor.getString(4),
@@ -183,8 +184,6 @@ public class DatabaseAdapter {
         }
         return stockList;
     }
-
-
 
 
     public void dropProductTable() {
@@ -206,10 +205,8 @@ public class DatabaseAdapter {
     }
 
 
-
     class DatabaseHelper extends SQLiteOpenHelper {
         private Context context;
-
 
 
         private static final String DATABASE_NAME = "stock_mover.db";

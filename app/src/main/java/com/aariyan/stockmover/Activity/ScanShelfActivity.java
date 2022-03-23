@@ -23,6 +23,7 @@ import com.aariyan.stockmover.Validation.InputValidation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class ScanShelfActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -80,7 +81,7 @@ public class ScanShelfActivity extends AppCompatActivity implements View.OnClick
         switch (id) {
             case R.id.nextBtn:
                 listOfLocation.clear();
-                listOfLocation = databaseAdapter.getLocation(enterLocation.getText().toString());
+                listOfLocation = databaseAdapter.getLocation(enterLocation.getText().toString().toUpperCase(Locale.ROOT));
                 if (listOfLocation.size() > 0) {
                     intent = new Intent(ScanShelfActivity.this, SelectionActivity.class);
                     intent.putExtra("type", Constant.STOCK_TYPE);

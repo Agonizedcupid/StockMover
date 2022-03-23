@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="75dp"
         android:background="?attr/colorPrimary"
         android:gravity="center_vertical"
         app:buttonGravity="center_vertical"
@@ -33,7 +33,8 @@
                 android:id="@+id/backBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/white_back_arrow"
+                android:src="@drawable/white_arrow_big"
+                android:layout_marginStart="-15dp"
                 />
 
             <TextView
@@ -120,6 +121,8 @@
                 android:paddingStart="15dp"
                 android:textColor="@android:color/black"
                 android:textSize="14sp"
+                android:maxLines="1"
+                android:singleLine="true"
                 app:layout_constraintLeft_creator="1"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_creator="1"
