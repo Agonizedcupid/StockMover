@@ -2,6 +2,6 @@
     <string name="app_name">StockMover</string>
     <string name="dialog_title">Please wait for a while!</string>
     <string name="log_in_text">Log-In</string>
-    <string name="scan_shelf_text">Scan Shelf</string>
+    <string name="scan_shelf_text">Scan Location</string>
     <string name="scan_barcode_text">Scan Barcode</string>
 </resources>
