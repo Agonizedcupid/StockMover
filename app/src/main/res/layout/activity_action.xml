@@ -42,7 +42,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="ProductId"
-                android:textSize="16sp"
+                android:textSize="20sp"
                 android:textColor="@android:color/darker_gray"
                 />
 
@@ -147,8 +147,9 @@
                 android:gravity="center"
                 android:minHeight="48dp"
                 android:text="Save"
+                android:textColor="@android:color/white"
                 android:layout_marginTop="15dp"
-                android:textSize="12sp"
+                android:textSize="24sp"
                 app:layout_constraintBottom_creator="1"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_creator="1"

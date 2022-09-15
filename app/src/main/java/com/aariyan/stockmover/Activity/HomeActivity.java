@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +22,7 @@ import com.aariyan.stockmover.Interface.DeletePostingData;
 import com.aariyan.stockmover.Interface.ProductSyncInterface;
 import com.aariyan.stockmover.MainActivity;
 import com.aariyan.stockmover.Model.PostLines;
+import com.aariyan.stockmover.Model.PostModel;
 import com.aariyan.stockmover.Model.ProductsSyncModel;
 import com.aariyan.stockmover.Model.QueueModel;
 import com.aariyan.stockmover.Model.StockModel;
@@ -114,15 +116,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void loadData() {
-
         List<QueueModel> list = databaseAdapter.getQueue();
         if (list.size() > 0) {
-            notUploadedText.setVisibility(View.VISIBLE);
+            //notUploadedText.setVisibility(View.VISIBLE);
             NotUploadedAdapter notUploadedAdapter = new NotUploadedAdapter(this, list);
             notUploaded.setAdapter(notUploadedAdapter);
             notUploadedAdapter.notifyDataSetChanged();
         } else {
-            notUploadedText.setVisibility(View.GONE);
+            //notUploadedText.setVisibility(View.GONE);
         }
 
 
@@ -134,12 +135,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         if (newList.size() > 0) {
-            notMovedInText.setVisibility(View.VISIBLE);
+            //notMovedInText.setVisibility(View.VISIBLE);
             NotMovedInAdapter notMovedInAdapter = new NotMovedInAdapter(this, newList);
             notMovedIn.setAdapter(notMovedInAdapter);
             notMovedInAdapter.notifyDataSetChanged();
         } else {
-            notMovedInText.setVisibility(View.GONE);
+            //notMovedInText.setVisibility(View.GONE);
         }
 
     }
@@ -205,11 +206,29 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void uploadDocument() {
+
         progressBar.setVisibility(View.VISIBLE);
-        if (getStock.size() > 0) {
+
+        String MoveType = "";
+        List<QueueModel> list = databaseAdapter.getQueue();
+        List<PostModel> postList = new ArrayList<>();
+        for (QueueModel model : list) {
+            if (model.getMoveIn().equals("1")) {
+                MoveType = "Move In";
+            }
+            if (model.getMoveFrom().equals("1")) {
+                MoveType = "Move From";
+            }
+
+            PostModel mod = new PostModel("" + model.getLocation(), "" + MoveType, "" + model.getBarcode(),""+deviceId());
+            postList.add(mod);
+        }
+
+        if (postList.size() > 0) {
             StringRequest mStringRequest = new StringRequest(
                     Request.Method.POST,
-                    MainActivity.getURL() + "postLines.php",
+                    //MainActivity.getURL() + "postLines.php",
+                    "http://102.37.0.48/StockMoverHendok/postLinesmovements.php",
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -218,18 +237,26 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                             //Now Removing the data from SQLite:
                             //deleteUploadedJobs();
                             progressBar.setVisibility(View.GONE);
-                            databaseAdapter.dropStockTable();
+                            databaseAdapter.dropQueueTable();
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    loadData();
+                                }
+                            },2000);
+
                         }
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     progressBar.setVisibility(View.GONE);
+                    Log.d("", "onErrorResponse: ");
                 }
             }
             ) {
                 @Override
                 public byte[] getBody() throws AuthFailureError {
-                    String jsonString = new Gson().toJson(getStock).toString();
+                    String jsonString = new Gson().toJson(postList).toString();
                     return jsonString.getBytes();
                 }
             };
@@ -238,6 +265,38 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             Toast.makeText(HomeActivity.this, "Not enough data!", Toast.LENGTH_SHORT).show();
             progressBar.setVisibility(View.GONE);
         }
+//        if (getStock.size() > 0) {
+//            StringRequest mStringRequest = new StringRequest(
+//                    Request.Method.POST,
+//                    MainActivity.getURL() + "postLines.php",
+//                    new Response.Listener<String>() {
+//                        @Override
+//                        public void onResponse(String response) {
+//                            //Log.d("FEEDBACK", response);
+//                            Toast.makeText(HomeActivity.this, response.toString() + " Posted successfully!", Toast.LENGTH_SHORT).show();
+//                            //Now Removing the data from SQLite:
+//                            //deleteUploadedJobs();
+//                            progressBar.setVisibility(View.GONE);
+//                            databaseAdapter.dropStockTable();
+//                        }
+//                    }, new Response.ErrorListener() {
+//                @Override
+//                public void onErrorResponse(VolleyError error) {
+//                    progressBar.setVisibility(View.GONE);
+//                }
+//            }
+//            ) {
+//                @Override
+//                public byte[] getBody() throws AuthFailureError {
+//                    String jsonString = new Gson().toJson(getStock).toString();
+//                    return jsonString.getBytes();
+//                }
+//            };
+//            Volley.newRequestQueue(HomeActivity.this).add(mStringRequest);
+//        } else {
+//            Toast.makeText(HomeActivity.this, "Not enough data!", Toast.LENGTH_SHORT).show();
+//            progressBar.setVisibility(View.GONE);
+//        }
 
     }
 

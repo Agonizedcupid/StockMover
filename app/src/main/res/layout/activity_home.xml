@@ -41,7 +41,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Stock Mover (Home)"
-                android:textSize="16sp"
+                android:textSize="20sp"
                 android:textColor="@android:color/darker_gray"
                 />
 

@@ -162,31 +162,36 @@ public class SelectionActivity extends AppCompatActivity implements View.OnClick
 
         QueueModel model = new QueueModel("" + moveIn, "" + moveFrom, location, barcode);
 
-        List<QueueModel> list = databaseAdapter.getQueueByBarcode(barcode);
-        if (list.size() == 1) {
-            //Update Operations:
-            QueueModel mod = list.get(0);
-            if (mod.getMoveFrom().equals("0") && Constant.STOCK_TYPE.equals("MOVE_FROM")) {
-                long id = databaseAdapter.updateQueueByBarcode("MOVE_FROM",barcode);
-            }
-            if (mod.getMoveFrom().equals("1") && Constant.STOCK_TYPE.equals("MOVE_FROM")) {
-                Toast.makeText(this, "Item already moved from", Toast.LENGTH_SHORT).show();
-            }
+        //Insert Operations:
+        long id = databaseAdapter.insertQueue(model);
 
-            if (mod.getMoveIn().equals("0") && Constant.STOCK_TYPE.equals("MOVE_IN")) {
-                long id = databaseAdapter.updateQueueByBarcode("MOVE_IN",barcode);
-            }
-            if (mod.getMoveIn().equals("1") && Constant.STOCK_TYPE.equals("MOVE_IN")) {
-                Toast.makeText(this, "Item already moved in", Toast.LENGTH_SHORT).show();
-            }
-
-        } else {
-            //Insert Operations:
-            long id = databaseAdapter.insertQueue(model);
-            if (id > 0) {
-                Toast.makeText(this, "Saved On Queue", Toast.LENGTH_SHORT).show();
-            }
-        }
+        startActivity(new Intent(this, HomeActivity.class));
+        finish();
+        //List<QueueModel> list = databaseAdapter.getQueueByBarcode(barcode);
+//        if (list.size() == 1) {
+//            //Update Operations:
+//            QueueModel mod = list.get(0);
+//            if (mod.getMoveFrom().equals("0") && Constant.STOCK_TYPE.equals("MOVE_FROM")) {
+//                long id = databaseAdapter.updateQueueByBarcode("MOVE_FROM",barcode);
+//            }
+//            if (mod.getMoveFrom().equals("1") && Constant.STOCK_TYPE.equals("MOVE_FROM")) {
+//                Toast.makeText(this, "Item already moved from", Toast.LENGTH_SHORT).show();
+//            }
+//
+//            if (mod.getMoveIn().equals("0") && Constant.STOCK_TYPE.equals("MOVE_IN")) {
+//                long id = databaseAdapter.updateQueueByBarcode("MOVE_IN",barcode);
+//            }
+//            if (mod.getMoveIn().equals("1") && Constant.STOCK_TYPE.equals("MOVE_IN")) {
+//                Toast.makeText(this, "Item already moved in", Toast.LENGTH_SHORT).show();
+//            }
+//
+//        } else {
+//            //Insert Operations:
+//            long id = databaseAdapter.insertQueue(model);
+//            if (id > 0) {
+//                Toast.makeText(this, "Saved On Queue", Toast.LENGTH_SHORT).show();
+//            }
+//        }
 
 
     }
