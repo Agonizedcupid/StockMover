@@ -11,6 +11,7 @@ public class RetrofitClient {
     private static Retrofit retrofit;
     public static String BASE_URLs = MainActivity.getURL();
 
+
     //private static String BASE_URL = "http://102.37.0.48/";
 
     public static Retrofit getClient() {

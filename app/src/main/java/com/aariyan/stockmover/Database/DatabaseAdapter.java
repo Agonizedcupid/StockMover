@@ -16,6 +16,7 @@ import com.aariyan.stockmover.Activity.HomeActivity;
 import com.aariyan.stockmover.Interface.DeletePostingData;
 import com.aariyan.stockmover.Model.LocationSyncModel;
 import com.aariyan.stockmover.Model.ProductsSyncModel;
+import com.aariyan.stockmover.Model.QueueModel;
 import com.aariyan.stockmover.Model.StockModel;
 
 import java.util.ArrayList;
@@ -55,6 +56,18 @@ public class DatabaseAdapter {
         return id;
     }
 
+    public long insertQueue(QueueModel model) {
+        SQLiteDatabase database = helper.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DatabaseHelper.BARCODE, model.getBarcode());
+        contentValues.put(DatabaseHelper.LOCATION, model.getLocation());
+        contentValues.put(DatabaseHelper.MOVE_IN, model.getMoveIn());
+        contentValues.put(DatabaseHelper.MOVE_FROM, model.getMoveFrom());
+
+        long id = database.insert(DatabaseHelper.QUEUE_TABLE_NAME, null, contentValues);
+        return id;
+    }
+
     //Insert Product:
     public long insertLocations(String intBinLocationId, String strBinLocationName, String intaislenumber) {
         SQLiteDatabase database = helper.getWritableDatabase();
@@ -70,6 +83,47 @@ public class DatabaseAdapter {
 
         long id = database.insert(DatabaseHelper.LOCATION_TABLE_NAME, null, contentValues);
         return id;
+    }
+
+    public long updateQueueByBarcode(String stockType, String barcode) {
+        SQLiteDatabase database = helper.getWritableDatabase();
+        String selection = DatabaseHelper.BARCODE + " LIKE ? ";
+        String[] args = {"" + barcode};
+
+        ContentValues contentValues = new ContentValues();
+        if (stockType.equals("MOVE_FROM")) {
+            contentValues.put(DatabaseHelper.MOVE_FROM, 1);
+        } else {
+            contentValues.put(DatabaseHelper.MOVE_IN, 1);
+        }
+        long ids = database.update(DatabaseHelper.QUEUE_TABLE_NAME, contentValues, selection, args);
+
+        return ids;
+    }
+
+
+    public List<QueueModel> getQueueByBarcode(String barcode) {
+        List<QueueModel> list = new ArrayList<>();
+        SQLiteDatabase database = helper.getWritableDatabase();
+        //select * from tableName where name = ? and customerName = ?:
+        // String selection = DatabaseHelper.USER_NAME+" where ? AND "+DatabaseHelper.CUSTOMER_NAME+" LIKE ?";
+        String selection = DatabaseHelper.BARCODE + "=?";
+
+
+        String[] args = {barcode};
+        String[] columns = {DatabaseHelper.UID, DatabaseHelper.MOVE_IN, DatabaseHelper.MOVE_FROM, DatabaseHelper.LOCATION,DatabaseHelper.BARCODE};
+
+        Cursor cursor = database.query(DatabaseHelper.QUEUE_TABLE_NAME, columns, selection, args, null, null, null);
+        while (cursor.moveToNext()) {
+            QueueModel model = new QueueModel(
+                    ""+cursor.getString(1),
+                    ""+cursor.getString(2),
+                    ""+cursor.getString(3),
+                    ""+cursor.getString(4)
+            );
+            list.add(model);
+        }
+        return list;
     }
 
 
@@ -204,13 +258,19 @@ public class DatabaseAdapter {
         database.execSQL(DatabaseHelper.CREATE_LOCATION_TABLE);
     }
 
+    public void dropQueueTable() {
+        SQLiteDatabase database = helper.getWritableDatabase();
+        database.execSQL(DatabaseHelper.DROP_QUEUE_TABLE);
+        database.execSQL(DatabaseHelper.CREATE_QUEUE_TABLE);
+    }
+
 
     class DatabaseHelper extends SQLiteOpenHelper {
         private Context context;
 
 
         private static final String DATABASE_NAME = "stock_mover.db";
-        private static final int VERSION_NUMBER = 6;
+        private static final int VERSION_NUMBER = 10;
 
         //Product Table:
         private static final String PRODUCT_TABLE_NAME = "products";
@@ -265,6 +325,19 @@ public class DatabaseAdapter {
                 + strTransactionType + " VARCHAR(255));";
         private static final String DROP_STOCK_IN_OUT_TABLE = "DROP TABLE IF EXISTS " + PRODUCT_STOCK_IN_OUT_NAME;
 
+        private static final String QUEUE_TABLE_NAME = "queue";
+        private static final String MOVE_IN = "move_in";
+        private static final String MOVE_FROM = "move_from";
+        private static final String LOCATION = "location";
+        private static final String BARCODE = "barcode";
+        private static final String CREATE_QUEUE_TABLE = "CREATE TABLE " + QUEUE_TABLE_NAME
+                + " (" + UID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + MOVE_IN + " VARCHAR(255),"
+                + MOVE_FROM + " VARCHAR(255),"
+                + LOCATION + " VARCHAR(255),"
+                + BARCODE + " VARCHAR(255));";
+        private static final String DROP_QUEUE_TABLE = "DROP TABLE IF EXISTS " + QUEUE_TABLE_NAME;
+
 
         public DatabaseHelper(@Nullable Context context) {
             super(context, DATABASE_NAME, null, VERSION_NUMBER);
@@ -278,6 +351,7 @@ public class DatabaseAdapter {
                 db.execSQL(CREATE_PRODUCT_TABLE);
                 db.execSQL(CREATE_LOCATION_TABLE);
                 db.execSQL(CREATE_STOCK_IN_OUT_TABLE);
+                db.execSQL(CREATE_QUEUE_TABLE);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -290,6 +364,7 @@ public class DatabaseAdapter {
                 db.execSQL(DROP_PRODUCT_TABLE);
                 db.execSQL(DROP_LOCATION_TABLE);
                 db.execSQL(DROP_STOCK_IN_OUT_TABLE);
+                db.execSQL(DROP_QUEUE_TABLE);
                 onCreate(db);
             } catch (Exception e) {
                 e.printStackTrace();

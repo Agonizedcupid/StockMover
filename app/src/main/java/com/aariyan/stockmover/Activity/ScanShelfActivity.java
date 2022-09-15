@@ -49,11 +49,12 @@ public class ScanShelfActivity extends AppCompatActivity implements View.OnClick
 
         if (getIntent() != null) {
             Constant.STOCK_TYPE = getIntent().getStringExtra("type");
-            if (Constant.STOCK_TYPE.equals("out")) {
-                topTitle.setText("Stock Out");
-            } else {
-                topTitle.setText("Stock-In");
-            }
+            topTitle.setText(Constant.STOCK_TYPE);
+//            if (Constant.STOCK_TYPE.equals("out")) {
+//                topTitle.setText("Stock Out");
+//            } else {
+//                topTitle.setText("Stock-In");
+//            }
         }
     }
 

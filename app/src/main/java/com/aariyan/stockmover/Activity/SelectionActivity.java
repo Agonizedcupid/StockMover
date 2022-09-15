@@ -20,6 +20,7 @@ import com.aariyan.stockmover.Common.Constant;
 import com.aariyan.stockmover.Database.DatabaseAdapter;
 import com.aariyan.stockmover.Interface.ItemClickListener;
 import com.aariyan.stockmover.Model.ProductsSyncModel;
+import com.aariyan.stockmover.Model.QueueModel;
 import com.aariyan.stockmover.R;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
@@ -98,7 +99,7 @@ public class SelectionActivity extends AppCompatActivity implements View.OnClick
         });
 
 
-        loadProduct();
+        //loadProduct();
 
     }
 
@@ -140,9 +141,54 @@ public class SelectionActivity extends AppCompatActivity implements View.OnClick
                 break;
 
             case R.id.nextBtn:
-                moveToAction();
+                //moveToAction();
+                saveProduct();
                 break;
         }
+    }
+
+    private void saveProduct() {
+        String barcode = enterBarcode.getText().toString().trim();
+        String location = Constant.location;
+
+        String moveFrom = "", moveIn = "";
+        if (Constant.STOCK_TYPE.equals("MOVE_FROM")) {
+            moveFrom = "1";
+            moveIn = "0";
+        } else {
+            moveFrom = "0";
+            moveIn = "1";
+        }
+
+        QueueModel model = new QueueModel("" + moveIn, "" + moveFrom, location, barcode);
+
+        List<QueueModel> list = databaseAdapter.getQueueByBarcode(barcode);
+        if (list.size() == 1) {
+            //Update Operations:
+            QueueModel mod = list.get(0);
+            if (mod.getMoveFrom().equals("0") && Constant.STOCK_TYPE.equals("MOVE_FROM")) {
+                long id = databaseAdapter.updateQueueByBarcode("MOVE_FROM",barcode);
+            }
+            if (mod.getMoveFrom().equals("1") && Constant.STOCK_TYPE.equals("MOVE_FROM")) {
+                Toast.makeText(this, "Item already moved from", Toast.LENGTH_SHORT).show();
+            }
+
+            if (mod.getMoveIn().equals("0") && Constant.STOCK_TYPE.equals("MOVE_IN")) {
+                long id = databaseAdapter.updateQueueByBarcode("MOVE_IN",barcode);
+            }
+            if (mod.getMoveIn().equals("1") && Constant.STOCK_TYPE.equals("MOVE_IN")) {
+                Toast.makeText(this, "Item already moved in", Toast.LENGTH_SHORT).show();
+            }
+
+        } else {
+            //Insert Operations:
+            long id = databaseAdapter.insertQueue(model);
+            if (id > 0) {
+                Toast.makeText(this, "Saved On Queue", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+
     }
 
     private boolean isBarcodeValidated() {
@@ -152,7 +198,7 @@ public class SelectionActivity extends AppCompatActivity implements View.OnClick
             return true;
         } else {
             loadProduct();
-            Toast.makeText(this, "No Product Found with "+enterBarcode.getText().toString(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No Product Found with " + enterBarcode.getText().toString(), Toast.LENGTH_SHORT).show();
             return false;
         }
     }
@@ -175,7 +221,7 @@ public class SelectionActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void moveToAction() {
-        if(isBarcodeValidated()) {
+        if (isBarcodeValidated()) {
             Constant.BARCODE = enterBarcode.getText().toString();
             startActivity(new Intent(SelectionActivity.this, ActionActivity.class));
         }

@@ -63,6 +63,7 @@
         app:cardElevation="15dp"
         app:cardCornerRadius="7dp"
         app:cardUseCompatPadding="true"
+        android:visibility="gone"
         >
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -227,7 +228,7 @@
                 android:background="@drawable/clicked_btn_sync_background"
                 android:gravity="center"
                 android:minHeight="48dp"
-                android:text="Next"
+                android:text="Save"
                 android:layout_marginTop="15dp"
                 android:textSize="12sp"
                 app:layout_constraintBottom_creator="1"

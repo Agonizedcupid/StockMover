@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public static String getURL() {
-        return sharedPreferences.getString("BASE_URL", "http://102.37.0.48/");
+        return sharedPreferences.getString("BASE_URL", "http://102.37.0.48/GrvApp/");
     }
 
 

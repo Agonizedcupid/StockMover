@@ -68,10 +68,13 @@ public class ApiCalling {
         activity = (Activity) context;
         requestQueue = Volley.newRequestQueue(context);
     }
-
+//adfasdf
     public void postLogIn(String userName, String pinCode, ProgressBar progressBar) {
 
-        String URL = MainActivity.getURL() + "GrvApp/users.php";
+        String URL = MainActivity.getURL() + "users.php";
+        //This is for the test API
+        //String URL = MainActivity.getURL() + "GrvApp/users.php";
+        int va = 0;
         StringRequest mStringRequest = new StringRequest(
                 Request.Method.POST,
                 URL,

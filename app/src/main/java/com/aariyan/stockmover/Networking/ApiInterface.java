@@ -17,10 +17,20 @@ public interface ApiInterface {
     @POST("GrvApp/users.php")
     Observable<ResponseBody> loggedIn(@Field("username") String userName, @Field("pincode") int pinCode);
 
-    @GET("StockMover/items.php")
+    //Test
+//    @GET("StockMover/items.php")
+//    Observable<ResponseBody> syncProduct();
+//
+//    @GET("StockMover/Locations.php")
+//    Observable<ResponseBody> syncLocation();
+//
+//    @POST("/StockMover/postLines.php")
+//    Observable<ResponseBody> postLines(@Body JSONArray jsonArray);
+
+    @GET("items.php")
     Observable<ResponseBody> syncProduct();
 
-    @GET("StockMover/Locations.php")
+    @GET("Locations.php")
     Observable<ResponseBody> syncLocation();
 
     @POST("/StockMover/postLines.php")

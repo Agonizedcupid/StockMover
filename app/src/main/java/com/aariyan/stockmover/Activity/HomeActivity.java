@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -58,6 +59,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_home);
         databaseAdapter = new DatabaseAdapter(this);
 
+        Log.d("BASE_URL", "onCreate: "+MainActivity.getURL());
 
         initUI();
     }
@@ -94,12 +96,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         switch (id) {
             case R.id.stockOutBtn:
                 intent = new Intent(HomeActivity.this, ScanShelfActivity.class);
-                intent.putExtra("type", "out");
+                //intent.putExtra("type", "out");
+                intent.putExtra("type", "MOVE_FROM");
                 startActivity(intent);
                 break;
             case R.id.stockInBtn:
                 intent = new Intent(HomeActivity.this, ScanShelfActivity.class);
-                intent.putExtra("type", "in");
+               // intent.putExtra("type", "in");
+                intent.putExtra("type", "MOVE_IN");
                 startActivity(intent);
                 break;
 
@@ -149,7 +153,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         if (getStock.size() > 0) {
             StringRequest mStringRequest = new StringRequest(
                     Request.Method.POST,
-                    MainActivity.getURL()+"StockMover/postLines.php",
+                    MainActivity.getURL()+"postLines.php",
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
