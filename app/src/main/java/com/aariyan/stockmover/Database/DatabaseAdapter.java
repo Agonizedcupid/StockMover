@@ -111,15 +111,15 @@ public class DatabaseAdapter {
 
 
         String[] args = {barcode};
-        String[] columns = {DatabaseHelper.UID, DatabaseHelper.MOVE_IN, DatabaseHelper.MOVE_FROM, DatabaseHelper.LOCATION,DatabaseHelper.BARCODE};
+        String[] columns = {DatabaseHelper.UID, DatabaseHelper.MOVE_IN, DatabaseHelper.MOVE_FROM, DatabaseHelper.LOCATION, DatabaseHelper.BARCODE};
 
         Cursor cursor = database.query(DatabaseHelper.QUEUE_TABLE_NAME, columns, selection, args, null, null, null);
         while (cursor.moveToNext()) {
             QueueModel model = new QueueModel(
-                    ""+cursor.getString(1),
-                    ""+cursor.getString(2),
-                    ""+cursor.getString(3),
-                    ""+cursor.getString(4)
+                    "" + cursor.getString(1),
+                    "" + cursor.getString(2),
+                    "" + cursor.getString(3),
+                    "" + cursor.getString(4)
             );
             list.add(model);
         }
@@ -152,6 +152,23 @@ public class DatabaseAdapter {
         return locationList;
     }
 
+    public List<QueueModel> getQueue() {
+        List<QueueModel> list = new ArrayList<>();
+        SQLiteDatabase database = helper.getWritableDatabase();
+        String[] columns = {DatabaseHelper.UID, DatabaseHelper.MOVE_IN, DatabaseHelper.MOVE_FROM, DatabaseHelper.LOCATION, DatabaseHelper.BARCODE};
+
+        Cursor cursor = database.query(DatabaseHelper.QUEUE_TABLE_NAME, columns, null, null, null, null, null);
+        while (cursor.moveToNext()) {
+            QueueModel model = new QueueModel(
+                    cursor.getString(1),
+                    cursor.getString(2),
+                    cursor.getString(3),
+                    cursor.getString(4)
+            );
+            list.add(model);
+        }
+        return list;
+    }
 
     //validate location:
     public List<ProductsSyncModel> getProduct() {

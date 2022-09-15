@@ -1,6 +1,8 @@
 package com.aariyan.stockmover.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,12 +14,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.aariyan.stockmover.Adapter.NotMovedInAdapter;
+import com.aariyan.stockmover.Adapter.NotUploadedAdapter;
 import com.aariyan.stockmover.Database.DatabaseAdapter;
 import com.aariyan.stockmover.Interface.DeletePostingData;
 import com.aariyan.stockmover.Interface.ProductSyncInterface;
 import com.aariyan.stockmover.MainActivity;
 import com.aariyan.stockmover.Model.PostLines;
 import com.aariyan.stockmover.Model.ProductsSyncModel;
+import com.aariyan.stockmover.Model.QueueModel;
 import com.aariyan.stockmover.Model.StockModel;
 import com.aariyan.stockmover.Networking.ApiCalling;
 import com.aariyan.stockmover.R;
@@ -53,13 +58,17 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     List<StockModel> getStock = new ArrayList<>();
 
+    private RecyclerView notMovedIn, notUploaded;
+
+    private TextView notMovedInText, notUploadedText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         databaseAdapter = new DatabaseAdapter(this);
 
-        Log.d("BASE_URL", "onCreate: "+MainActivity.getURL());
+        Log.d("BASE_URL", "onCreate: " + MainActivity.getURL());
 
         initUI();
     }
@@ -85,7 +94,54 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         progressBar = findViewById(R.id.pBar);
 
+        notMovedIn = findViewById(R.id.notMovedInRecyclerView);
+        notMovedIn.setLayoutManager(new LinearLayoutManager(this));
+
+        notUploaded = findViewById(R.id.notUploadedRecyclerView);
+        notUploaded.setLayoutManager(new LinearLayoutManager(this));
+
+        notMovedInText = findViewById(R.id.notMovedInTextView);
+        notUploadedText = findViewById(R.id.notUploadedTextView);
+
+
         getStock = databaseAdapter.getStock(deviceId());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadData();
+    }
+
+    private void loadData() {
+
+        List<QueueModel> list = databaseAdapter.getQueue();
+        if (list.size() > 0) {
+            notUploadedText.setVisibility(View.VISIBLE);
+            NotUploadedAdapter notUploadedAdapter = new NotUploadedAdapter(this, list);
+            notUploaded.setAdapter(notUploadedAdapter);
+            notUploadedAdapter.notifyDataSetChanged();
+        } else {
+            notUploadedText.setVisibility(View.GONE);
+        }
+
+
+        List<QueueModel> newList = new ArrayList<>();
+        for (QueueModel model : list) {
+            if (model.getMoveIn().equals("0")) {
+                newList.add(model);
+            }
+        }
+
+        if (newList.size() > 0) {
+            notMovedInText.setVisibility(View.VISIBLE);
+            NotMovedInAdapter notMovedInAdapter = new NotMovedInAdapter(this, newList);
+            notMovedIn.setAdapter(notMovedInAdapter);
+            notMovedInAdapter.notifyDataSetChanged();
+        } else {
+            notMovedInText.setVisibility(View.GONE);
+        }
+
     }
 
     @Override
@@ -102,7 +158,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.stockInBtn:
                 intent = new Intent(HomeActivity.this, ScanShelfActivity.class);
-               // intent.putExtra("type", "in");
+                // intent.putExtra("type", "in");
                 intent.putExtra("type", "MOVE_IN");
                 startActivity(intent);
                 break;
@@ -153,7 +209,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         if (getStock.size() > 0) {
             StringRequest mStringRequest = new StringRequest(
                     Request.Method.POST,
-                    MainActivity.getURL()+"postLines.php",
+                    MainActivity.getURL() + "postLines.php",
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
