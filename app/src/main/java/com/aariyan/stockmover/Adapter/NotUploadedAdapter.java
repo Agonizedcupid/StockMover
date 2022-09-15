@@ -21,6 +21,7 @@ public class NotUploadedAdapter extends RecyclerView.Adapter<NotUploadedAdapter.
 
     private Context context;
     private List<QueueModel> list;
+
     public NotUploadedAdapter(Context context, List<QueueModel> list) {
         this.context = context;
         this.list = list;
@@ -30,7 +31,7 @@ public class NotUploadedAdapter extends RecyclerView.Adapter<NotUploadedAdapter.
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(context).inflate(R.layout.single_not_uploaded,parent,false));
+        return new ViewHolder(LayoutInflater.from(context).inflate(R.layout.single_not_uploaded, parent, false));
     }
 
     @Override
@@ -39,14 +40,21 @@ public class NotUploadedAdapter extends RecyclerView.Adapter<NotUploadedAdapter.
         QueueModel model = list.get(index);
         try {
             holder.itemLocation.setText(model.getLocation());
-            if (model.getMoveIn().equals("1") && model.getMoveFrom().equals("1")) {
+//            else if (model.getMoveIn().equals("0")){
+//                holder.itemType.setText("Move From");
+//            }
+            if (model.getMoveFrom().equals("1")) {
+                holder.itemType.setText("Move From");
+            } else if (model.getMoveIn().equals("1")) {
+                holder.itemType.setText("Move In");
+            }
+            else if (model.getMoveIn().equals("1") && model.getMoveFrom().equals("1")) {
                 holder.itemType.setText("Both");
-            } else if (model.getMoveIn().equals("0")){
-                holder.itemType.setText("Moved From");
             }
 
+
             holder.itemName.setText(model.getBarcode());
-        }catch (Exception e) {
+        } catch (Exception e) {
 
         }
     }

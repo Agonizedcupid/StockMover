@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,6 +19,7 @@ import android.widget.Toast;
 
 import com.aariyan.stockmover.Adapter.NotMovedInAdapter;
 import com.aariyan.stockmover.Adapter.NotUploadedAdapter;
+import com.aariyan.stockmover.Common.Constant;
 import com.aariyan.stockmover.Database.DatabaseAdapter;
 import com.aariyan.stockmover.Interface.DeletePostingData;
 import com.aariyan.stockmover.Interface.ProductSyncInterface;
@@ -192,15 +195,37 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.backBtn:
                 checkClick = true;
-                onBackPressed();
+                showAlert();
+                //onBackPressed();
                 break;
         }
     }
 
+    private void showAlert() {
+        AlertDialog alertDialog = new AlertDialog.Builder(HomeActivity.this).create();
+        alertDialog.setTitle("Alert");
+        alertDialog.setMessage("You are about to go back to Login, are you sure?");
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        startActivity(new Intent(HomeActivity.this, MainActivity.class));
+                        dialog.dismiss();
+                    }
+                });
+
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int i) {
+                dialog.dismiss();
+            }
+        });
+        alertDialog.show();
+    }
+
     public String deviceId() {
-        Long tsLong = System.currentTimeMillis() / 1000;
-        String ts = tsLong.toString();
-        String subscriberId = ts + "-" + Settings.Secure.getString(getContentResolver(),
+        //Long tsLong = System.currentTimeMillis() / 1000;
+        //String ts = tsLong.toString();
+        String subscriberId = System.currentTimeMillis() + "-" + Settings.Secure.getString(getContentResolver(),
                 Settings.Secure.ANDROID_ID);
         return subscriberId;
     }
@@ -220,7 +245,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 MoveType = "Move From";
             }
 
-            PostModel mod = new PostModel("" + model.getLocation(), "" + MoveType, "" + model.getBarcode(),""+deviceId());
+            PostModel mod = new PostModel("" + model.getLocation(), "" + MoveType, "" + model.getBarcode(), "" + deviceId(), Constant.userID);
             postList.add(mod);
         }
 
@@ -242,9 +267,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                                 @Override
                                 public void run() {
                                     loadData();
+                                    startActivity(new Intent(HomeActivity.this, HomeActivity.class));
                                 }
-                            },2000);
-
+                            }, 2000);
                         }
                     }, new Response.ErrorListener() {
                 @Override

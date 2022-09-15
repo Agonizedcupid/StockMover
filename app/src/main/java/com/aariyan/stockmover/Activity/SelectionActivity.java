@@ -151,6 +151,7 @@ public class SelectionActivity extends AppCompatActivity implements View.OnClick
         String barcode = enterBarcode.getText().toString().trim();
         String location = Constant.location;
 
+        Toast.makeText(this, ""+Constant.STOCK_TYPE, Toast.LENGTH_SHORT).show();
         String moveFrom = "", moveIn = "";
         if (Constant.STOCK_TYPE.equals("MOVE_FROM")) {
             moveFrom = "1";
