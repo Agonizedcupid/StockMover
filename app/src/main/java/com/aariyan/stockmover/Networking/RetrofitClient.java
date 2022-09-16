@@ -1,5 +1,6 @@
 package com.aariyan.stockmover.Networking;
 
+import com.aariyan.stockmover.Activity.HomeActivity;
 import com.aariyan.stockmover.MainActivity;
 
 import retrofit2.Retrofit;
@@ -9,6 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofitClient {
 
     private static Retrofit retrofit;
+   // public static String BASE_URLs = MainActivity.getURL();
     public static String BASE_URLs = MainActivity.getURL();
 
 

@@ -1,5 +1,6 @@
 package com.aariyan.stockmover;
 
+import androidx.annotation.LongDef;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ActionBar;
@@ -10,6 +11,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -204,7 +206,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         progressBar.setVisibility(View.VISIBLE);
         ApiCalling apiCalling = new ApiCalling(MainActivity.this);
-        apiCalling.postLogIn(name, pin, progressBar);
+        //apiCalling.postLogIn(ipField.getText().toString(),name, pin, progressBar);
+        apiCalling.postLogIn(getURL(),name, pin, progressBar);
+        Log.d("BASE_URL", "onResume: "+getURL());
 
     }
 

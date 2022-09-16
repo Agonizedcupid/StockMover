@@ -1,6 +1,8 @@
 package com.aariyan.stockmover.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,6 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.aariyan.stockmover.Adapter.LocationAdapter;
 import com.aariyan.stockmover.Common.Constant;
 import com.aariyan.stockmover.Database.DatabaseAdapter;
 import com.aariyan.stockmover.Interface.ProductSyncInterface;
@@ -39,6 +42,8 @@ public class ScanShelfActivity extends AppCompatActivity implements View.OnClick
     DatabaseAdapter databaseAdapter;
     private List<LocationSyncModel> listOfLocation = new ArrayList<>();
 
+    private RecyclerView recyclerView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +61,18 @@ public class ScanShelfActivity extends AppCompatActivity implements View.OnClick
 //                topTitle.setText("Stock-In");
 //            }
         }
+
+        recyclerView = findViewById(R.id.lList);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LocationAdapter locationAdapter = new LocationAdapter(this, databaseAdapter.getLocation());
+        recyclerView.setAdapter(locationAdapter);
+        locationAdapter.notifyDataSetChanged();
+
     }
 
     private void initUI() {
@@ -82,8 +99,12 @@ public class ScanShelfActivity extends AppCompatActivity implements View.OnClick
         switch (id) {
             case R.id.nextBtn:
                 listOfLocation.clear();
-                listOfLocation = databaseAdapter.getLocation(enterLocation.getText().toString().toUpperCase(Locale.ROOT));
-                if (listOfLocation.size() > 0) {
+                String location = enterLocation.getText().toString().toUpperCase(Locale.ROOT);
+                //listOfLocation = databaseAdapter.getLocation(enterLocation.getText().toString().toUpperCase(Locale.ROOT));
+                listOfLocation = databaseAdapter.getLocation();
+                boolean check = checkExitOrNot(location, listOfLocation);
+                //if (listOfLocation.size() > 0) {
+                if (check) {
                     intent = new Intent(ScanShelfActivity.this, SelectionActivity.class);
                     intent.putExtra("type", Constant.STOCK_TYPE);
                     Toast.makeText(this, ""+Constant.STOCK_TYPE, Toast.LENGTH_SHORT).show();
@@ -103,6 +124,15 @@ public class ScanShelfActivity extends AppCompatActivity implements View.OnClick
                 onBackPressed();
                 break;
         }
+    }
+
+    private boolean checkExitOrNot(String location, List<LocationSyncModel> listOfLocation) {
+        for (LocationSyncModel model : listOfLocation) {
+            if (model.getStrBinLocationName().toUpperCase(Locale.ROOT).equals(location)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // Validation of location input:

@@ -69,9 +69,10 @@ public class ApiCalling {
         requestQueue = Volley.newRequestQueue(context);
     }
 //adfasdf
-    public void postLogIn(String userName, String pinCode, ProgressBar progressBar) {
+    public void postLogIn(String ip, String userName, String pinCode, ProgressBar progressBar) {
 
-        String URL = MainActivity.getURL() + "users.php";
+        //String URL = MainActivity.getURL() + "users.php";
+        String URL = ip + "users.php";
         //This is for the test API
         //String URL = MainActivity.getURL() + "GrvApp/users.php";
         int va = 0;
@@ -266,6 +267,7 @@ public class ApiCalling {
                 }));
     }
     public void insertLocationIntoSQLite(List<LocationSyncModel> list, ProgressBar progressBar) {
+        adapter.dropLocationTable();
         progressBar.setVisibility(View.VISIBLE);
         Observable observable = Observable.fromIterable(list).observeOn(Schedulers.newThread());
         Observer observer = new Observer() {

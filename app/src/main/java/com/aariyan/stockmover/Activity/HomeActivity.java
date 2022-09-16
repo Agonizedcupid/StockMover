@@ -1,12 +1,15 @@
 package com.aariyan.stockmover.Activity;
 
+import androidx.annotation.LongDef;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
@@ -17,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.aariyan.stockmover.Adapter.LocationAdapter;
 import com.aariyan.stockmover.Adapter.NotMovedInAdapter;
 import com.aariyan.stockmover.Adapter.NotUploadedAdapter;
 import com.aariyan.stockmover.Common.Constant;
@@ -67,11 +71,19 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private TextView notMovedInText, notUploadedText;
 
+    private SharedPreferences sharedPreferences;
+
+
+    TextView text;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        sharedPreferences = getSharedPreferences("ip", Context.MODE_PRIVATE);
         databaseAdapter = new DatabaseAdapter(this);
+
+        text = findViewById(R.id.text);
 
         Log.d("BASE_URL", "onCreate: " + MainActivity.getURL());
 
@@ -116,6 +128,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     protected void onResume() {
         super.onResume();
         loadData();
+
+        text.setText(getURL());
+
+
+        Log.d("BASE_URL", "onResume: " + getURL());
     }
 
     private void loadData() {
@@ -253,7 +270,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             StringRequest mStringRequest = new StringRequest(
                     Request.Method.POST,
                     //MainActivity.getURL() + "postLines.php",
-                    "http://102.37.0.48/StockMoverHendok/postLinesmovements.php",
+                    //"http://102.37.0.48/StockMoverHendok/postLinesmovements.php",
+                    getURL() + "postLinesmovements.php",
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -323,6 +341,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 //            progressBar.setVisibility(View.GONE);
 //        }
 
+    }
+
+    public String getURL() {
+        //return sharedPreferences.getString("BASE_URL", "http://102.37.0.48/GrvApp/");
+        //return sharedPreferences.getString("BASE_URL", "http://102.37.0.48/StockMoverHendok/");
+        return sharedPreferences.getString("BASE_URL", "");
     }
 
     @Override

@@ -152,6 +152,23 @@ public class DatabaseAdapter {
         return locationList;
     }
 
+    public List<LocationSyncModel> getLocation() {
+        List<LocationSyncModel> list = new ArrayList<>();
+        SQLiteDatabase database = helper.getWritableDatabase();
+        String[] columns = {DatabaseHelper.UID, DatabaseHelper.intBinLocationId, DatabaseHelper.strBinLocationName, DatabaseHelper.intaislenumber};
+
+        Cursor cursor = database.query(DatabaseHelper.LOCATION_TABLE_NAME, columns, null, null, null, null, null);
+        while (cursor.moveToNext()) {
+            LocationSyncModel model = new LocationSyncModel(
+                    cursor.getString(1),
+                    cursor.getString(2),
+                    cursor.getString(3)
+            );
+            list.add(model);
+        }
+        return list;
+    }
+
     public List<QueueModel> getQueue() {
         List<QueueModel> list = new ArrayList<>();
         SQLiteDatabase database = helper.getWritableDatabase();

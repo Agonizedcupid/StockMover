@@ -165,6 +165,7 @@
             android:layout_height="50dp"
             android:layout_marginTop="15dp"
             android:background="@drawable/edit_text_background"
+            android:text="http://102.37.0.48/StockMoverHendok/"
             android:hint="Ip, e.g: http://google.com/"
             android:paddingStart="15dp"
             android:textColor="@color/black"
